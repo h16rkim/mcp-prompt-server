@@ -1,13 +1,17 @@
 import fs from 'fs-extra';
 import path from 'path';
 import YAML from 'yaml';
-import type { PromptTemplate } from '../types.js';
+import type { PromptTemplate, PromptMessage, PromptArgument } from '../types.js';
+import { FileUtils } from './fileUtils.js';
+import { Logger } from './logger.js';
+import { DEFAULT_MESSAGES, ERROR_MESSAGES } from '../config/constants.js';
 
 /**
  * Prompt 로더 클래스
+ * Prompt 템플릿 파일들을 로드하고 검증하는 역할을 담당
  */
 export class PromptLoader {
-  private promptsDir: string;
+  private readonly promptsDir: string;
   private loadedPrompts: PromptTemplate[] = [];
 
   constructor(promptsDir: string) {
@@ -19,45 +23,16 @@ export class PromptLoader {
    */
   async loadPrompts(): Promise<PromptTemplate[]> {
     try {
-      // prompts 디렉토리가 존재하는지 확인
-      await fs.ensureDir(this.promptsDir);
-      
-      // prompts 디렉토리의 모든 파일 읽기
-      const files = await fs.readdir(this.promptsDir);
-      
-      // YAML과 JSON 파일만 필터링
-      const promptFiles = files.filter(file => 
-        file.endsWith('.yaml') || file.endsWith('.yml') || file.endsWith('.json')
-      );
-      
-      // 각 prompt 파일 로드
-      const prompts: PromptTemplate[] = [];
-      for (const file of promptFiles) {
-        const filePath = path.join(this.promptsDir, file);
-        const content = await fs.readFile(filePath, 'utf8');
-        
-        let prompt: unknown;
-        if (file.endsWith('.json')) {
-          prompt = JSON.parse(content);
-        } else {
-          // 다른 파일들은 YAML 형식으로 가정
-          prompt = YAML.parse(content);
-        }
-        
-        // prompt 유효성 검사
-        if (!this.isValidPromptTemplate(prompt)) {
-          console.warn(`경고: ${file}의 Prompt 형식이 올바르지 않습니다. 건너뜁니다.`);
-          continue;
-        }
-        
-        prompts.push(prompt);
-      }
+      await this.ensurePromptsDirectory();
+      const promptFiles = await this.getPromptFiles();
+      const prompts = await this.parsePromptFiles(promptFiles);
       
       this.loadedPrompts = prompts;
-      console.log(`${this.promptsDir}에서 ${prompts.length}개의 prompts를 로드했습니다.`);
+      Logger.info(DEFAULT_MESSAGES.PROMPTS_LOADED(prompts.length));
+      
       return prompts;
     } catch (error) {
-      console.error('prompts 로드 중 오류:', error);
+      Logger.error(ERROR_MESSAGES.PROMPTS_LOAD_FAILED, error);
       return [];
     }
   }
@@ -65,8 +40,8 @@ export class PromptLoader {
   /**
    * 로드된 prompts 반환
    */
-  getLoadedPrompts(): PromptTemplate[] {
-    return this.loadedPrompts;
+  getLoadedPrompts(): readonly PromptTemplate[] {
+    return [...this.loadedPrompts];
   }
 
   /**
@@ -84,94 +59,134 @@ export class PromptLoader {
   }
 
   /**
+   * prompts 디렉토리 존재 확인 및 생성
+   */
+  private async ensurePromptsDirectory(): Promise<void> {
+    await fs.ensureDir(this.promptsDir);
+  }
+
+  /**
+   * prompt 파일 목록 가져오기
+   */
+  private async getPromptFiles(): Promise<string[]> {
+    const files = await fs.readdir(this.promptsDir);
+    return FileUtils.filterPromptFiles(files);
+  }
+
+  /**
+   * prompt 파일들을 파싱하여 PromptTemplate 배열로 변환
+   */
+  private async parsePromptFiles(promptFiles: string[]): Promise<PromptTemplate[]> {
+    const prompts: PromptTemplate[] = [];
+
+    for (const file of promptFiles) {
+      try {
+        const prompt = await this.parsePromptFile(file);
+        if (prompt) {
+          prompts.push(prompt);
+        }
+      } catch (error) {
+        Logger.warn(`파일 ${file} 파싱 중 오류: ${error}`);
+      }
+    }
+
+    return prompts;
+  }
+
+  /**
+   * 개별 prompt 파일 파싱
+   */
+  private async parsePromptFile(filename: string): Promise<PromptTemplate | null> {
+    const filePath = path.join(this.promptsDir, filename);
+    const content = await fs.readFile(filePath, 'utf8');
+    
+    const parsedContent = FileUtils.isJsonFile(filename) 
+      ? JSON.parse(content)
+      : YAML.parse(content);
+
+    if (!this.isValidPromptTemplate(parsedContent)) {
+      Logger.warn(ERROR_MESSAGES.INVALID_PROMPT_FORMAT(filename));
+      return null;
+    }
+
+    return parsedContent;
+  }
+
+  /**
    * PromptTemplate 유효성 검사
    */
   private isValidPromptTemplate(obj: unknown): obj is PromptTemplate {
-    if (typeof obj !== 'object' || obj === null) {
-      return false;
-    }
+    if (!this.isObject(obj)) return false;
 
     const prompt = obj as Record<string, unknown>;
 
-    // name 필드 검사
-    if (typeof prompt.name !== 'string' || prompt.name.trim() === '') {
-      return false;
-    }
-
-    // description 필드 검사
-    if (typeof prompt.description !== 'string') {
-      return false;
-    }
-
-    // messages 필드 검사
-    if (!Array.isArray(prompt.messages)) {
-      return false;
-    }
-
-    // 각 메시지 유효성 검사
-    for (const message of prompt.messages) {
-      if (!this.isValidPromptMessage(message)) {
-        return false;
-      }
-    }
-
-    // arguments 필드 검사 (선택적)
-    if (prompt.arguments !== undefined) {
-      if (!Array.isArray(prompt.arguments)) {
-        return false;
-      }
-
-      for (const arg of prompt.arguments) {
-        if (!this.isValidPromptArgument(arg)) {
-          return false;
-        }
-      }
-    }
-
-    return true;
+    return (
+      this.isValidString(prompt.name) &&
+      this.isValidString(prompt.description) &&
+      this.isValidMessages(prompt.messages) &&
+      this.isValidArguments(prompt.arguments)
+    );
   }
 
   /**
-   * PromptMessage 유효성 검사
+   * 메시지 배열 유효성 검사
    */
-  private isValidPromptMessage(obj: unknown): boolean {
-    if (typeof obj !== 'object' || obj === null) {
-      return false;
-    }
+  private isValidMessages(messages: unknown): messages is PromptMessage[] {
+    if (!Array.isArray(messages)) return false;
+    return messages.every(message => this.isValidPromptMessage(message));
+  }
+
+  /**
+   * 개별 메시지 유효성 검사
+   */
+  private isValidPromptMessage(obj: unknown): obj is PromptMessage {
+    if (!this.isObject(obj)) return false;
 
     const message = obj as Record<string, unknown>;
+    const validRoles = ['user', 'assistant', 'system'];
 
-    // role 필드 검사
-    if (!['user', 'assistant', 'system'].includes(message.role as string)) {
-      return false;
-    }
-
-    // content 필드 검사
-    if (typeof message.content !== 'object' || message.content === null) {
-      return false;
-    }
-
-    const content = message.content as Record<string, unknown>;
-
-    // content.type과 content.text 검사
-    return content.type === 'text' && typeof content.text === 'string';
+    return (
+      validRoles.includes(message.role as string) &&
+      this.isObject(message.content) &&
+      (message.content as any).type === 'text' &&
+      this.isValidString((message.content as any).text)
+    );
   }
 
   /**
-   * PromptArgument 유효성 검사
+   * 인수 배열 유효성 검사
    */
-  private isValidPromptArgument(obj: unknown): boolean {
-    if (typeof obj !== 'object' || obj === null) {
-      return false;
-    }
+  private isValidArguments(args: unknown): args is PromptArgument[] | undefined {
+    if (args === undefined) return true;
+    if (!Array.isArray(args)) return false;
+    return args.every(arg => this.isValidPromptArgument(arg));
+  }
+
+  /**
+   * 개별 인수 유효성 검사
+   */
+  private isValidPromptArgument(obj: unknown): obj is PromptArgument {
+    if (!this.isObject(obj)) return false;
 
     const arg = obj as Record<string, unknown>;
-
     return (
-      typeof arg.name === 'string' &&
-      arg.name.trim() !== '' &&
-      typeof arg.description === 'string' &&
+      this.isValidString(arg.name) &&
+      this.isValidString(arg.description) &&
       typeof arg.required === 'boolean'
     );
+  }
+
+  /**
+   * 객체 타입 검사
+   */
+  private isObject(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
+  }
+
+  /**
+   * 유효한 문자열 검사
+   */
+  private isValidString(value: unknown): value is string {
+    return typeof value === 'string' && value.trim() !== '';
   }
 }

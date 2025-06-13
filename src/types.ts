@@ -1,38 +1,46 @@
 import { z } from 'zod';
 
 /**
+ * 기본 타입 정의
+ */
+export type MessageRole = 'user' | 'assistant' | 'system';
+export type McpMessageRole = 'user' | 'assistant';
+export type ArgumentsType = Record<string, unknown>;
+export type ZodArgumentsSchema = Record<string, z.ZodType<any>> | undefined;
+
+/**
  * Prompt 인수 정의
  */
 export interface PromptArgument {
-  name: string;
-  description: string;
-  required: boolean;
+  readonly name: string;
+  readonly description: string;
+  readonly required: boolean;
 }
 
 /**
  * Prompt 메시지 내용 정의
  */
 export interface PromptMessageContent {
-  type: 'text';
-  text: string;
+  readonly type: 'text';
+  readonly text: string;
 }
 
 /**
  * Prompt 메시지 정의
  */
 export interface PromptMessage {
-  role: 'user' | 'assistant' | 'system';
-  content: PromptMessageContent;
+  readonly role: MessageRole;
+  readonly content: PromptMessageContent;
 }
 
 /**
  * Prompt 템플릿 정의
  */
 export interface PromptTemplate {
-  name: string;
-  description: string;
-  arguments?: PromptArgument[];
-  messages: PromptMessage[];
+  readonly name: string;
+  readonly description: string;
+  readonly arguments?: readonly PromptArgument[];
+  readonly messages: readonly PromptMessage[];
 }
 
 /**
@@ -40,7 +48,7 @@ export interface PromptTemplate {
  */
 export interface McpResponseMessage {
   [x: string]: unknown;
-  role: 'user' | 'assistant';
+  role: McpMessageRole;
   content: {
     [x: string]: unknown;
     type: 'text';
@@ -74,11 +82,21 @@ export interface McpToolResponse {
 }
 
 /**
- * 인수 타입 정의 (동적으로 생성되는 Zod 스키마용)
+ * 템플릿 검증 결과
  */
-export type ArgumentsType = Record<string, unknown>;
+export interface TemplateValidationResult {
+  readonly isValid: boolean;
+  readonly missingArgs: readonly string[];
+  readonly errors: readonly string[];
+}
 
 /**
- * Zod 스키마 타입 정의
+ * Prompt 정보 응답
  */
-export type ZodArgumentsSchema = Record<string, z.ZodType<any>> | undefined;
+export interface PromptInfo {
+  name: string;
+  description: string;
+  argumentCount: number;
+  messageCount: number;
+  arguments?: PromptArgument[] | undefined;
+}
