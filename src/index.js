@@ -77,56 +77,56 @@ async function startServer() {
     version: "1.0.0"
   });
   
-  // 각 미리 설정된 prompt에 대해 도구 생성
+  // 각 미리 설정된 prompt를 MCP prompt로 등록
   loadedPrompts.forEach(prompt => {
-    // 도구의 입력 스키마 구성
-    const schemaObj = {};
+    // prompt 매개변수 스키마 구성
+    let argumentsSchema = {};
     
-    if (prompt.arguments && Array.isArray(prompt.arguments)) {
+    if (prompt.arguments && Array.isArray(prompt.arguments) && prompt.arguments.length > 0) {
       prompt.arguments.forEach(arg => {
-        // 기본적으로 모든 매개변수는 문자열 타입
-        schemaObj[arg.name] = z.string().describe(arg.description || `매개변수: ${arg.name}`);
+        // 기본적으로 문자열 타입으로 설정, 필요시 확장 가능
+        argumentsSchema[arg.name] = arg.required ? z.string() : z.string().optional();
       });
+    } else {
+      // arguments가 없거나 빈 배열인 경우 undefined로 설정하여 검증 건너뛰기
+      argumentsSchema = undefined;
     }
     
-    // 도구 등록
-    server.tool(
+    // MCP prompt 등록
+    server.prompt(
       prompt.name,
-      schemaObj,
+      argumentsSchema,
       async (args) => {
-        // prompt 내용 처리
-        let promptText = '';
+        // prompt 메시지 처리
+        const messages = [];
         
         if (prompt.messages && Array.isArray(prompt.messages)) {
-          // 사용자 메시지만 처리
-          const userMessages = prompt.messages.filter(msg => msg.role === 'user');
-          
-          for (const message of userMessages) {
+          for (const message of prompt.messages) {
             if (message.content && typeof message.content.text === 'string') {
               let text = message.content.text;
               
               // 모든 {{arg}} 형식의 매개변수 교체
-              for (const [key, value] of Object.entries(args)) {
-                text = text.replace(new RegExp(`{{${key}}}`, 'g'), value);
+              if (args) {
+                for (const [key, value] of Object.entries(args)) {
+                  text = text.replace(new RegExp(`{{${key}}}`, 'g'), value || '');
+                }
               }
               
-              promptText += text + '\n\n';
+              messages.push({
+                role: message.role || 'user',
+                content: {
+                  type: 'text',
+                  text: text
+                }
+              });
             }
           }
         }
         
-        // 처리된 prompt 내용 반환
         return {
-          content: [
-            {
-              type: "text",
-              text: promptText.trim()
-            }
-          ]
+          description: prompt.description || `Prompt: ${prompt.name}`,
+          messages: messages
         };
-      },
-      {
-        description: prompt.description || `Prompt: ${prompt.name}`
       }
     );
   });
@@ -145,9 +145,6 @@ async function startServer() {
           }
         ]
       };
-    },
-    {
-      description: "모든 미리 설정된 prompts를 다시 로드합니다"
     }
   );
   
@@ -165,9 +162,6 @@ async function startServer() {
           }
         ]
       };
-    },
-    {
-      description: "사용 가능한 모든 prompt 이름을 가져옵니다"
     }
   );
   
