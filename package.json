@@ -2,11 +2,15 @@
   "name": "mcp-prompt-server",
   "version": "1.0.0",
   "description": "MCP服务器，提供预设的prompt工具来引导Claude执行任务",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "build": "tsc",
+    "postbuild": "cp -r src/prompts dist/",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -25,6 +29,11 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "nodemon": "^3.0.3"
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.11.0",
+    "nodemon": "^3.0.3",
+    "rimraf": "^5.0.5",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
   }
 }

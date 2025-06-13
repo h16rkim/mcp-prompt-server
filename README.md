@@ -12,20 +12,43 @@
 - 允许开发者自由添加和修改prompt模板
 - 提供工具API，可重新加载prompt和查询可用prompt
 - 专为Cursor和Windsurf等编辑器优化，提供更好的集成体验
+- **TypeScript 支持**: 完全使用 TypeScript 重写，提供类型安全和更好的开发体验
+
+## 技术栈
+
+- **TypeScript**: 提供类型安全和更好的开发体验
+- **Node.js**: 运行时环境
+- **MCP SDK**: Model Context Protocol 支持
+- **Zod**: 运行时类型验证
+- **YAML**: 配置文件格式支持
 
 ## 目录结构
 
 ```
 prompt-server/
 ├── package.json         # 项目依赖和脚本
-├── src/                 # 源代码目录
-│   ├── index.js         # 服务器入口文件
+├── tsconfig.json        # TypeScript 配置
+├── src/                 # TypeScript 源代码目录
+│   ├── index.ts         # 服务器入口文件
+│   ├── types.ts         # 类型定义
+│   ├── server/          # 服务器相关代码
+│   │   └── McpPromptServer.ts
+│   ├── utils/           # 유틸리티 함수들
+│   │   ├── promptLoader.ts
+│   │   └── templateProcessor.ts
 │   └── prompts/         # 预设prompt模板目录
 │       ├── code_review.yaml
 │       ├── api_documentation.yaml
 │       ├── code_refactoring.yaml
 │       ├── test_case_generator.yaml
-│       └── project_architecture.yaml
+│       ├── project_architecture.yaml
+│       ├── convert.yaml
+│       ├── commit_and_push.yaml
+│       ├── fix.yaml
+│       ├── writing_assistant.yaml
+│       ├── prompt_template_generator.yaml
+│       └── build_mcp_server.yaml
+├── dist/                # 编译后的 JavaScript 文件
 └── README.md            # 项目说明文档
 ```
 
@@ -38,13 +61,32 @@ cd prompt-server
 npm install
 ```
 
-2. 启动服务器：
+2. 构建项目：
+
+```bash
+npm run build
+```
+
+3. 启动服务器：
 
 ```bash
 npm start
 ```
 
+4. 开发模式（自动重启）：
+
+```bash
+npm run dev
+```
+
 服务器将在标准输入/输出上运行，可以被Cursor、Windsurf或其他MCP客户端连接。
+
+## 开发脚本
+
+- `npm run build`: 编译 TypeScript 代码
+- `npm run clean`: 清理编译输出目录
+- `npm start`: 启动编译后的服务器
+- `npm run dev`: 开发模式，监听文件变化并自动重启
 
 ## 添加新的Prompt模板
 
@@ -66,6 +108,31 @@ messages:                        # prompt消息列表
 ```
 
 添加新文件后，服务器会在下次启动时自动加载，或者您可以使用`reload_prompts`工具重新加载所有prompt。
+
+## TypeScript 开发
+
+### 类型安全
+
+项目使用 TypeScript 提供完整的类型安全：
+
+- **PromptTemplate**: Prompt 模板的类型定义
+- **McpPromptResponse**: MCP 响应的类型定义
+- **ArgumentsType**: 动态参数的类型定义
+
+### 主要类
+
+- **McpPromptServer**: 主要的 MCP 服务器类
+- **PromptLoader**: Prompt 模板加载器
+- **TemplateProcessor**: 模板处理工具
+
+### 扩展开发
+
+要添加新功能：
+
+1. 在 `src/types.ts` 中定义相关类型
+2. 在相应的类中实现功能
+3. 运行 `npm run build` 编译
+4. 使用 `npm run dev` 进行开发测试
 
 ## 使用示例
 
@@ -100,6 +167,7 @@ messages:                        # prompt消息列表
 
 - `reload_prompts`: 重新加载所有预设的prompts
 - `get_prompt_names`: 获取所有可用的prompt名称
+- `get_prompt_info`: 获取特定prompt的详细信息
 
 此外，所有在`src/prompts`目录中定义的prompt模板都会作为工具提供给客户端。
 
@@ -117,7 +185,7 @@ messages:                        # prompt消息列表
   "servers": [
     {
       "name": "Prompt Server",
-      "command": ["node", "/path/to/prompt-server/src/index.js"],
+      "command": ["node", "/path/to/prompt-server/dist/index.js"],
       "transport": "stdio",
       "initialization_options": {}
     }
@@ -146,7 +214,7 @@ messages:                        # prompt消息列表
     "prompt-server": {
       "command": "node",
       "args": [
-        "/path/to/prompt-server/src/index.js"
+        "/path/to/prompt-server/dist/index.js"
       ],
       "transport": "stdio"
     }
@@ -166,3 +234,5 @@ messages:                        # prompt消息列表
 3. 添加prompt分类和标签
 4. 实现prompt使用统计和分析
 5. 添加用户反馈机制
+6. 支持更多模板语法（条件语句、循环等）
+7. 添加prompt模板验证和测试功能
