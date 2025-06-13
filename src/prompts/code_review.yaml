@@ -1,28 +1,28 @@
 name: code_review
-description: 当用户想要审查代码时，可以使用这个提示词，来帮助用户对代码进行全面审查，提供改进建议
+description: 사용자가 코드를 검토하고 싶을 때 사용할 수 있는 프롬프트로, 코드에 대한 전면적인 검토와 개선 제안을 도와줍니다
 arguments:
   - name: language
-    description: 编程语言
+    description: 프로그래밍 언어
     required: true
   - name: code
-    description: 要审查的代码
+    description: 검토할 코드
     required: true
 messages:
   - role: user
     content:
       type: text
       text: |
-        请对以下{{language}}代码进行全面审查，包括但不限于：
-        1. 代码质量和可读性
-        2. 潜在的bug和错误
-        3. 性能优化机会
-        4. 安全隐患
-        5. 最佳实践建议
-        6. 代码结构和组织
+        다음 {{language}} 코드에 대해 다음 항목들을 포함한 전면적인 검토를 해주세요:
+        1. 코드 품질과 가독성
+        2. 잠재적인 버그와 오류
+        3. 성능 최적화 기회
+        4. 보안 취약점
+        5. 모범 사례 제안
+        6. 코드 구조와 조직
 
-        代码：
+        코드:
         ```{{language}}
         {{code}}
         ```
 
-        请提供详细的分析和具体的改进建议。
+        자세한 분석과 구체적인 개선 제안을 제공해주세요.

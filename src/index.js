@@ -6,33 +6,33 @@ import { fileURLToPath } from 'url';
 import YAML from 'yaml';
 import { z } from 'zod';
 
-// 获取当前文件的目录路径
+// 현재 파일의 디렉토리 경로 가져오기
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 预设prompts的目录路径
+// 미리 설정된 prompts의 디렉토리 경로
 const PROMPTS_DIR = path.join(__dirname, 'prompts');
 
-// 存储所有加载的prompts
+// 로드된 모든 prompts 저장
 let loadedPrompts = [];
 
 /**
- * 从prompts目录加载所有预设的prompt
+ * prompts 디렉토리에서 모든 미리 설정된 prompt 로드
  */
 async function loadPrompts() {
   try {
-    // 确保prompts目录存在
+    // prompts 디렉토리가 존재하는지 확인
     await fs.ensureDir(PROMPTS_DIR);
     
-    // 读取prompts目录中的所有文件
+    // prompts 디렉토리의 모든 파일 읽기
     const files = await fs.readdir(PROMPTS_DIR);
     
-    // 过滤出YAML和JSON文件
+    // YAML과 JSON 파일만 필터링
     const promptFiles = files.filter(file => 
       file.endsWith('.yaml') || file.endsWith('.yml') || file.endsWith('.json')
     );
     
-    // 加载每个prompt文件
+    // 각 prompt 파일 로드
     const prompts = [];
     for (const file of promptFiles) {
       const filePath = path.join(PROMPTS_DIR, file);
@@ -42,13 +42,13 @@ async function loadPrompts() {
       if (file.endsWith('.json')) {
         prompt = JSON.parse(content);
       } else {
-        // 假设其他文件是YAML格式
+        // 다른 파일들은 YAML 형식으로 가정
         prompt = YAML.parse(content);
       }
       
-      // 确保prompt有name字段
+      // prompt에 name 필드가 있는지 확인
       if (!prompt.name) {
-        console.warn(`Warning: Prompt in ${file} is missing a name field. Skipping.`);
+        console.warn(`경고: ${file}의 Prompt에 name 필드가 없습니다. 건너뜁니다.`);
         continue;
       }
       
@@ -56,56 +56,56 @@ async function loadPrompts() {
     }
     
     loadedPrompts = prompts;
-    console.log(`Loaded ${prompts.length} prompts from ${PROMPTS_DIR}`);
+    console.log(`${PROMPTS_DIR}에서 ${prompts.length}개의 prompts를 로드했습니다.`);
     return prompts;
   } catch (error) {
-    console.error('Error loading prompts:', error);
+    console.error('prompts 로드 중 오류:', error);
     return [];
   }
 }
 
 /**
- * 启动MCP服务器
+ * MCP 서버 시작
  */
 async function startServer() {
-  // 加载所有预设的prompts
+  // 모든 미리 설정된 prompts 로드
   await loadPrompts();
   
-  // 创建MCP服务器
+  // MCP 서버 생성
   const server = new McpServer({
     name: "mcp-prompt-server",
     version: "1.0.0"
   });
   
-  // 为每个预设的prompt创建一个工具
+  // 각 미리 설정된 prompt에 대해 도구 생성
   loadedPrompts.forEach(prompt => {
-    // 构建工具的输入schema
+    // 도구의 입력 스키마 구성
     const schemaObj = {};
     
     if (prompt.arguments && Array.isArray(prompt.arguments)) {
       prompt.arguments.forEach(arg => {
-        // 默认所有参数都是字符串类型
-        schemaObj[arg.name] = z.string().describe(arg.description || `参数: ${arg.name}`);
+        // 기본적으로 모든 매개변수는 문자열 타입
+        schemaObj[arg.name] = z.string().describe(arg.description || `매개변수: ${arg.name}`);
       });
     }
     
-    // 注册工具
+    // 도구 등록
     server.tool(
       prompt.name,
       schemaObj,
       async (args) => {
-        // 处理prompt内容
+        // prompt 내용 처리
         let promptText = '';
         
         if (prompt.messages && Array.isArray(prompt.messages)) {
-          // 只处理用户消息
+          // 사용자 메시지만 처리
           const userMessages = prompt.messages.filter(msg => msg.role === 'user');
           
           for (const message of userMessages) {
             if (message.content && typeof message.content.text === 'string') {
               let text = message.content.text;
               
-              // 替换所有 {{arg}} 格式的参数
+              // 모든 {{arg}} 형식의 매개변수 교체
               for (const [key, value] of Object.entries(args)) {
                 text = text.replace(new RegExp(`{{${key}}}`, 'g'), value);
               }
@@ -115,7 +115,7 @@ async function startServer() {
           }
         }
         
-        // 返回处理后的prompt内容
+        // 처리된 prompt 내용 반환
         return {
           content: [
             {
@@ -131,7 +131,7 @@ async function startServer() {
     );
   });
   
-  // 添加管理工具 - 重新加载prompts
+  // 관리 도구 추가 - prompts 다시 로드
   server.tool(
     "reload_prompts",
     {},
@@ -141,17 +141,17 @@ async function startServer() {
         content: [
           {
             type: "text",
-            text: `成功重新加载了 ${loadedPrompts.length} 个prompts。`
+            text: `${loadedPrompts.length}개의 prompts를 성공적으로 다시 로드했습니다.`
           }
         ]
       };
     },
     {
-      description: "重新加载所有预设的prompts"
+      description: "모든 미리 설정된 prompts를 다시 로드합니다"
     }
   );
   
-  // 添加管理工具 - 获取prompt名称列表
+  // 관리 도구 추가 - prompt 이름 목록 가져오기
   server.tool(
     "get_prompt_names",
     {},
@@ -161,26 +161,26 @@ async function startServer() {
         content: [
           {
             type: "text",
-            text: `可用的prompts (${promptNames.length}):\n${promptNames.join('\n')}`
+            text: `사용 가능한 prompts (${promptNames.length}개):\n${promptNames.join('\n')}`
           }
         ]
       };
     },
     {
-      description: "获取所有可用的prompt名称"
+      description: "사용 가능한 모든 prompt 이름을 가져옵니다"
     }
   );
   
-  // 创建stdio传输层
+  // stdio 전송 계층 생성
   const transport = new StdioServerTransport();
   
-  // 连接服务器
+  // 서버 연결
   await server.connect(transport);
-  console.log('MCP Prompt Server is running...');
+  console.log('MCP Prompt Server가 실행 중입니다...');
 }
 
-// 启动服务器
+// 서버 시작
 startServer().catch(error => {
-  console.error('Failed to start server:', error);
+  console.error('서버 시작 실패:', error);
   process.exit(1);
 });

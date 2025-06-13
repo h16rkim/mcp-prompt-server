@@ -1,30 +1,30 @@
 name: test_case_generator
-description: 当用户想要为给定代码生成全面的测试用例时，可以使用这个提示词，来帮助用户生成测试用例
+description: 사용자가 주어진 코드에 대한 포괄적인 테스트 케이스를 생성하고 싶을 때 사용할 수 있는 프롬프트로, 테스트 케이스 생성을 도와줍니다
 arguments:
   - name: language
-    description: 编程语言
+    description: 프로그래밍 언어
     required: true
   - name: code
-    description: 要测试的代码
+    description: 테스트할 코드
     required: true
   - name: test_framework
-    description: 测试框架(如Jest, Pytest, JUnit等)
+    description: 테스트 프레임워크(Jest, Pytest, JUnit 등)
     required: true
 messages:
   - role: user
     content:
       type: text
       text: |
-        请为以下{{language}}代码生成全面的测试用例，使用{{test_framework}}测试框架：
+        다음 {{language}} 코드에 대해 {{test_framework}} 테스트 프레임워크를 사용하여 포괄적인 테스트 케이스를 생성해주세요:
 
         ```{{language}}
         {{code}}
         ```
 
-        测试用例应包括：
-        1. 正常功能测试
-        2. 边界条件测试
-        3. 错误处理测试
-        4. 性能测试(如适用)
+        테스트 케이스에는 다음이 포함되어야 합니다:
+        1. 정상 기능 테스트
+        2. 경계 조건 테스트
+        3. 오류 처리 테스트
+        4. 성능 테스트(해당되는 경우)
         
-        请确保测试覆盖所有主要功能和边缘情况，并提供每个测试的详细说明。
+        모든 주요 기능과 엣지 케이스를 커버하는 테스트를 작성하고, 각 테스트에 대한 상세한 설명을 제공해주세요.

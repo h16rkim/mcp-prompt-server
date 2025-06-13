@@ -1,26 +1,26 @@
 name: build_mcp_server
-description: 当用户想要创建一个MCP Server或MCP tool时，可以使用这个提示词，来帮助用户创建和配置MCP服务器，包括理解MCP文档、设计服务器资源和功能
+description: 사용자가 MCP Server나 MCP tool을 생성하고 싶을 때 사용할 수 있는 프롬프트로, MCP 서버 생성 및 구성을 도와주며, MCP 문서 이해, 서버 리소스 및 기능 설계를 포함합니다
 arguments: []
 messages:
   - role: user
     content:
       type: text
       text: |
-        # 创建MCP server
+        # MCP 서버 생성
 
-        Preparing the documentation
-        Before starting, gather the necessary documentation to help us to understand MCP:
+        문서 준비
+        시작하기 전에 MCP를 이해하는 데 도움이 되는 필요한 문서를 수집해주세요:
 
-        1. Visit https://modelcontextprotocol.io/llms-full.txt and read the full documentation text
-        2. Navigate to the MCP TypeScript SDK （https://github.com/modelcontextprotocol/typescript-sdk）
-        3. read the README files and other relevant documentation
+        1. https://modelcontextprotocol.io/llms-full.txt 를 방문하여 전체 문서 텍스트를 읽어주세요
+        2. MCP TypeScript SDK (https://github.com/modelcontextprotocol/typescript-sdk) 로 이동해주세요
+        3. README 파일과 기타 관련 문서를 읽어주세요
 
-        Describing your server
-        Once you've provided the documentation, clearly describe what kind of server you want to build. Be specific about:
+        서버 설명
+        문서를 제공한 후, 구축하고자 하는 서버의 종류를 명확하게 설명해주세요. 다음 사항을 구체적으로 명시해주세요:
 
-        - What resources your server will expose
-        - What tools it will provide
-        - Any prompts it should offer
-        - What external systems it needs to interact with
+        - 서버가 노출할 리소스
+        - 제공할 도구들
+        - 제공해야 할 프롬프트
+        - 상호작용해야 할 외부 시스템
 
-        Then start building the MCP server
+        그런 다음 MCP 서버 구축을 시작해주세요

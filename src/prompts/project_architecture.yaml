@@ -1,31 +1,31 @@
 name: project_architecture
-description: 当用户想要设计项目架构和目录结构时，可以使用这个提示词，来帮助用户设计合理的项目架构和目录结构
+description: 사용자가 프로젝트 아키텍처와 디렉토리 구조를 설계하고 싶을 때 사용할 수 있는 프롬프트로, 합리적인 프로젝트 아키텍처와 디렉토리 구조 설계를 도와줍니다
 arguments:
   - name: project_type
-    description: 项目类型(如Web应用、移动应用、API服务等)
+    description: 프로젝트 타입(웹 애플리케이션, 모바일 앱, API 서비스 등)
     required: true
   - name: technologies
-    description: 使用的技术栈(如React, Node.js, Python等)
+    description: 사용할 기술 스택(React, Node.js, Python 등)
     required: true
   - name: features
-    description: 项目主要功能和特性
+    description: 프로젝트의 주요 기능과 특성
     required: true
 messages:
   - role: user
     content:
       type: text
       text: |
-        请为以下项目设计一个合理的架构和目录结构：
+        다음 프로젝트에 대해 합리적인 아키텍처와 디렉토리 구조를 설계해주세요:
 
-        项目类型：{{project_type}}
-        技术栈：{{technologies}}
-        主要功能：{{features}}
+        프로젝트 타입: {{project_type}}
+        기술 스택: {{technologies}}
+        주요 기능: {{features}}
 
-        请提供：
-        1. 完整的目录结构
-        2. 主要组件/模块的划分
-        3. 数据流设计
-        4. 各组件之间的交互方式
-        5. 开发和部署建议
+        다음을 제공해주세요:
+        1. 완전한 디렉토리 구조
+        2. 주요 컴포넌트/모듈의 분할
+        3. 데이터 플로우 설계
+        4. 각 컴포넌트 간의 상호작용 방식
+        5. 개발 및 배포 제안
 
-        请确保架构设计遵循最佳实践，具有良好的可扩展性、可维护性和性能。
+        아키텍처 설계가 모범 사례를 따르고, 우수한 확장성, 유지보수성, 성능을 갖도록 해주세요.
