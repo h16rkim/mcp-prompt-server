@@ -1,11 +1,32 @@
 {
   "mcpServers": {
-    "prompt-server": {
+    "prompt-server-local": {
       "command": "node",
       "args": [
-        "/your-mcp-path/prompt-server/src/index.js"
+        "/path/to/mcp-prompt-server/dist/index.js"
       ],
-      "env": {}
+      "transport": "stdio"
+    },
+    "prompt-server-docker": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--name", "mcp-prompt-server",
+        "mcp-prompt-server:latest"
+      ],
+      "transport": "stdio"
+    },
+    "prompt-server-docker-compose": {
+      "command": "docker-compose",
+      "args": [
+        "-f", "/path/to/mcp-prompt-server/docker-compose.yml",
+        "run",
+        "--rm",
+        "mcp-prompt-server"
+      ],
+      "transport": "stdio"
     }
   }
 }
