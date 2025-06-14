@@ -2,41 +2,41 @@
 
 [English Version](README_EN.md)
 
-这是一个基于Model Context Protocol (MCP)的服务器，用于根据用户任务需求提供预设的prompt模板，帮助Cline/Cursor/Windsurf...更高效地执行各种任务。服务器将预设的prompt作为工具(tools)返回，以便在Cursor和Windsurf等编辑器中更好地使用。
+Model Context Protocol (MCP) 기반 서버로, 사용자 작업 요구사항에 따라 미리 설정된 prompt 템플릿을 제공하여 Cline/Cursor/Windsurf 등에서 다양한 작업을 더 효율적으로 수행할 수 있도록 도와줍니다. 서버는 미리 설정된 prompt를 도구(tools)로 반환하여 Cursor와 Windsurf 등의 편집기에서 더 나은 사용 경험을 제공합니다.
 
-## 功能特点
+## 주요 기능
 
-- 提供预设的prompt模板，可用于代码审查、API文档生成、代码重构等任务
-- 将所有prompt模板作为MCP工具(tools)提供，而非MCP prompts格式
-- 支持动态参数替换，使prompt模板更加灵活
-- 允许开发者自由添加和修改prompt模板
-- 提供工具API，可重新加载prompt和查询可用prompt
-- 专为Cursor和Windsurf等编辑器优化，提供更好的集成体验
-- **TypeScript 支持**: 完全使用 TypeScript 重写，提供类型安全和更好的开发体验
+- 코드 리뷰, API 문서 생성, 코드 리팩토링 등의 작업에 사용할 수 있는 미리 설정된 prompt 템플릿 제공
+- 모든 prompt 템플릿을 MCP prompts 형식이 아닌 MCP 도구(tools)로 제공
+- 동적 매개변수 치환을 지원하여 prompt 템플릿을 더욱 유연하게 사용
+- 개발자가 자유롭게 prompt 템플릿을 추가하고 수정할 수 있음
+- 도구 API를 제공하여 prompt 재로드 및 사용 가능한 prompt 조회 가능
+- Cursor와 Windsurf 등의 편집기에 최적화되어 더 나은 통합 경험 제공
+- **TypeScript 지원**: TypeScript로 완전히 재작성되어 타입 안전성과 더 나은 개발 경험 제공
 
-## 技术栈
+## 기술 스택
 
-- **TypeScript**: 提供类型安全和更好的开发体验
-- **Node.js**: 运行时环境
-- **MCP SDK**: Model Context Protocol 支持
-- **Zod**: 运行时类型验证
-- **YAML**: 配置文件格式支持
+- **TypeScript**: 타입 안전성과 더 나은 개발 경험 제공
+- **Node.js**: 런타임 환경
+- **MCP SDK**: Model Context Protocol 지원
+- **Zod**: 런타임 타입 검증
+- **YAML**: 설정 파일 형식 지원
 
-## 目录结构
+## 디렉토리 구조
 
 ```
 prompt-server/
-├── package.json         # 项目依赖和脚本
-├── tsconfig.json        # TypeScript 配置
-├── src/                 # TypeScript 源代码目录
-│   ├── index.ts         # 服务器入口文件
-│   ├── types.ts         # 类型定义
-│   ├── server/          # 服务器相关代码
+├── package.json         # 프로젝트 의존성 및 스크립트
+├── tsconfig.json        # TypeScript 설정
+├── src/                 # TypeScript 소스 코드 디렉토리
+│   ├── index.ts         # 서버 진입점 파일
+│   ├── types.ts         # 타입 정의
+│   ├── server/          # 서버 관련 코드
 │   │   └── McpPromptServer.ts
 │   ├── utils/           # 유틸리티 함수들
 │   │   ├── promptLoader.ts
 │   │   └── templateProcessor.ts
-│   └── prompts/         # 预设prompt模板目录
+│   └── prompts/         # 미리 설정된 prompt 템플릿 디렉토리
 │       ├── code_review.yaml
 │       ├── api_documentation.yaml
 │       ├── code_refactoring.yaml
@@ -48,95 +48,95 @@ prompt-server/
 │       ├── writing_assistant.yaml
 │       ├── prompt_template_generator.yaml
 │       └── build_mcp_server.yaml
-├── dist/                # 编译后的 JavaScript 文件
-└── README.md            # 项目说明文档
+├── dist/                # 컴파일된 JavaScript 파일
+└── README.md            # 프로젝트 설명 문서
 ```
 
-## 安装和使用
+## 설치 및 사용
 
-1. 安装依赖：
+1. 의존성 설치:
 
 ```bash
 cd prompt-server
 npm install
 ```
 
-2. 构建项目：
+2. 프로젝트 빌드:
 
 ```bash
 npm run build
 ```
 
-3. 启动服务器：
+3. 서버 시작:
 
 ```bash
 npm start
 ```
 
-4. 开发模式（自动重启）：
+4. 개발 모드 (자동 재시작):
 
 ```bash
 npm run dev
 ```
 
-服务器将在标准输入/输出上运行，可以被Cursor、Windsurf或其他MCP客户端连接。
+서버는 표준 입력/출력에서 실행되며, Cursor, Windsurf 또는 기타 MCP 클라이언트에서 연결할 수 있습니다.
 
-## 开发脚本
+## 개발 스크립트
 
-- `npm run build`: 编译 TypeScript 代码
-- `npm run clean`: 清理编译输出目录
-- `npm start`: 启动编译后的服务器
-- `npm run dev`: 开发模式，监听文件变化并自动重启
+- `npm run build`: TypeScript 코드 컴파일
+- `npm run clean`: 컴파일 출력 디렉토리 정리
+- `npm start`: 컴파일된 서버 시작
+- `npm run dev`: 개발 모드, 파일 변경 감지 및 자동 재시작
 
-## 添加新的Prompt模板
+## 새로운 Prompt 템플릿 추가
 
-您可以通过在`src/prompts`目录中添加新的YAML或JSON文件来创建新的prompt模板。每个模板文件应包含以下内容：
+`src/prompts` 디렉토리에 새로운 YAML 또는 JSON 파일을 추가하여 새로운 prompt 템플릿을 생성할 수 있습니다. 각 템플릿 파일은 다음 내용을 포함해야 합니다:
 
 ```yaml
-name: prompt_name                # 唯一标识符，用于调用此prompt
-description: prompt description  # 对prompt功能的描述
-arguments:                       # 参数列表（可选）
-  - name: arg_name               # 参数名称
-    description: arg description # 参数描述
-    required: true/false         # 是否必需
-messages:                        # prompt消息列表
-  - role: user/assistant         # 消息角色
+name: prompt_name                # 고유 식별자, 이 prompt 호출에 사용
+description: prompt description  # prompt 기능에 대한 설명
+arguments:                       # 매개변수 목록 (선택사항)
+  - name: arg_name               # 매개변수 이름
+    description: arg description # 매개변수 설명
+    required: true/false         # 필수 여부
+messages:                        # prompt 메시지 목록
+  - role: user/assistant         # 메시지 역할
     content:
-      type: text                 # 内容类型
-      text: |                    # 文本内容，可包含参数占位符 {{arg_name}}
+      type: text                 # 콘텐츠 타입
+      text: |                    # 텍스트 내용, 매개변수 플레이스홀더 {{arg_name}} 포함 가능
         Your prompt text here...
 ```
 
-添加新文件后，服务器会在下次启动时自动加载，或者您可以使用`reload_prompts`工具重新加载所有prompt。
+새 파일을 추가한 후, 서버는 다음 시작 시 자동으로 로드하거나 `reload_prompts` 도구를 사용하여 모든 prompt를 다시 로드할 수 있습니다.
 
-## TypeScript 开发
+## TypeScript 개발
 
-### 类型安全
+### 타입 안전성
 
-项目使用 TypeScript 提供完整的类型安全：
+프로젝트는 TypeScript를 사용하여 완전한 타입 안전성을 제공합니다:
 
-- **PromptTemplate**: Prompt 模板的类型定义
-- **McpPromptResponse**: MCP 响应的类型定义
-- **ArgumentsType**: 动态参数的类型定义
+- **PromptTemplate**: Prompt 템플릿의 타입 정의
+- **McpPromptResponse**: MCP 응답의 타입 정의
+- **ArgumentsType**: 동적 매개변수의 타입 정의
 
-### 主要类
+### 주요 클래스
 
-- **McpPromptServer**: 主要的 MCP 服务器类
-- **PromptLoader**: Prompt 模板加载器
-- **TemplateProcessor**: 模板处理工具
+- **McpPromptServer**: 주요 MCP 서버 클래스
+- **PromptLoader**: Prompt 템플릿 로더
+- **TemplateProcessor**: 템플릿 처리 도구
 
-### 扩展开发
+### 확장 개발
 
-要添加新功能：
+새로운 기능을 추가하려면:
 
-1. 在 `src/types.ts` 中定义相关类型
-2. 在相应的类中实现功能
-3. 运行 `npm run build` 编译
-4. 使用 `npm run dev` 进行开发测试
+1. `src/types.ts`에서 관련 타입 정의
+2. 해당 클래스에서 기능 구현
+3. `npm run build` 실행하여 컴파일
+4. `npm run dev`를 사용하여 개발 테스트
 
-## 使用示例
+## 사용 예시
 
-### 在Cursor或Windsurf中调用代码审查工具
+### Cursor 또는 Windsurf에서 코드 리뷰 도구 호출
 
 ```json
 {
@@ -148,37 +148,37 @@ messages:                        # prompt消息列表
 }
 ```
 
-### 在Cursor或Windsurf中调用API文档生成工具
+### Cursor 또는 Windsurf에서 API 문서 생성 도구 호출
 
 ```json
 {
   "name": "api_documentation",
   "arguments": {
     "language": "python",
-    "code": "def process_data(data, options=None):\n    # 处理数据\n    return result",
+    "code": "def process_data(data, options=None):\n    # 데이터 처리\n    return result",
     "format": "markdown"
   }
 }
 ```
 
-## 工具API
+## 도구 API
 
-服务器提供以下管理工具：
+서버는 다음 관리 도구를 제공합니다:
 
-- `reload_prompts`: 重新加载所有预设的prompts
-- `get_prompt_names`: 获取所有可用的prompt名称
-- `get_prompt_info`: 获取特定prompt的详细信息
+- `reload_prompts`: 모든 미리 설정된 prompt 다시 로드
+- `get_prompt_names`: 사용 가능한 모든 prompt 이름 가져오기
+- `get_prompt_info`: 특정 prompt의 상세 정보 가져오기
 
-此外，所有在`src/prompts`目录中定义的prompt模板都会作为工具提供给客户端。
+또한 `src/prompts` 디렉토리에 정의된 모든 prompt 템플릿이 클라이언트에 도구로 제공됩니다.
 
-## 与编辑器集成
+## 편집기 통합
 
 ### Cursor
 
-在Cursor中，您需要编辑MCP配置文件：
+Cursor에서 MCP 설정 파일을 편집해야 합니다:
 
-1. 找到或创建Cursor的MCP配置文件（通常位于`~/.cursor/`目录）
-2. 添加以下内容：
+1. Cursor의 MCP 설정 파일을 찾거나 생성합니다 (일반적으로 `~/.cursor/` 디렉토리에 위치)
+2. 다음 내용을 추가합니다:
 
 ```json
 {
@@ -193,20 +193,20 @@ messages:                        # prompt消息列表
 }
 ```
 
-请确保将`/path/to/prompt-server`替换为您实际的项目路径。
+`/path/to/prompt-server`를 실제 프로젝트 경로로 바꿔주세요.
 
-3. 保存配置并重启编辑器
-4. 现在您应该能够在工具面板中看到所有可用的prompt工具
+3. 설정을 저장하고 편집기를 재시작합니다
+4. 이제 도구 패널에서 사용 가능한 모든 prompt 도구를 볼 수 있습니다
 
 ### Windsurf
 
-在Windsurf中，通过以下方式访问MCP配置：
+Windsurf에서 다음 방법으로 MCP 설정에 접근합니다:
 
-1. 导航至 Windsurf - 设置 > 高级设置，或
-2. 使用命令面板 > 打开Windsurf设置页面
-3. 滚动到Cascade部分，您会看到添加新服务器的选项
-4. 点击"添加服务器"按钮，然后选择"添加自定义服务器+"
-5. 或者，您可以直接编辑`~/.codeium/windsurf/mcp_config.json`文件，添加以下内容：
+1. Windsurf - 설정 > 고급 설정으로 이동하거나
+2. 명령 팔레트 > Windsurf 설정 페이지 열기를 사용합니다
+3. Cascade 섹션으로 스크롤하면 새 서버 추가 옵션이 표시됩니다
+4. "서버 추가" 버튼을 클릭한 다음 "사용자 정의 서버 추가+"를 선택합니다
+5. 또는 `~/.codeium/windsurf/mcp_config.json` 파일을 직접 편집하여 다음 내용을 추가할 수 있습니다:
 
 ```json
 {
@@ -222,17 +222,17 @@ messages:                        # prompt消息列表
 }
 ```
 
-请确保将`/path/to/prompt-server`替换为您实际的项目路径。
+`/path/to/prompt-server`를 실제 프로젝트 경로로 바꿔주세요.
 
-6. 添加服务器后，点击刷新按钮
-7. 现在您应该能够在工具面板中看到所有可用的prompt工具
+6. 서버를 추가한 후 새로고침 버튼을 클릭합니다
+7. 이제 도구 패널에서 사용 가능한 모든 prompt 도구를 볼 수 있습니다
 
-## 扩展建议
+## 확장 제안
 
-1. 添加更多专业领域的prompt模板
-2. 实现prompt版本控制
-3. 添加prompt分类和标签
-4. 实现prompt使用统计和分析
-5. 添加用户反馈机制
-6. 支持更多模板语法（条件语句、循环等）
-7. 添加prompt模板验证和测试功能
+1. 더 많은 전문 분야의 prompt 템플릿 추가
+2. prompt 버전 관리 구현
+3. prompt 분류 및 태그 추가
+4. prompt 사용 통계 및 분석 구현
+5. 사용자 피드백 메커니즘 추가
+6. 더 많은 템플릿 구문 지원 (조건문, 반복문 등)
+7. prompt 템플릿 검증 및 테스트 기능 추가

@@ -1,9 +1,9 @@
 {
   "mcpServers": {
-    "prompt-server": {
+    "prompts": {
       "command": "node",
       "args": [
-        "/your-mcp-path/prompt-server/src/index.js"
+        "$PATH_TO_REPOSITORY/dist/index.js"
       ],
       "env": {}
     }
