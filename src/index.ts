@@ -14,8 +14,13 @@ class Application {
   private mcpPromptServer?: McpPromptServer;
 
   constructor() {
-    const currentDir = FileUtils.getCurrentDirectory(import.meta.url);
-    this.promptsDir = path.join(currentDir, 'prompts');
+    // 환경변수 PROMPTS_DIR이 있으면 해당 경로 사용, 없으면 기본 경로 사용
+    if (process.env.PROMPTS_DIR) {
+      this.promptsDir = path.resolve(process.env.PROMPTS_DIR);
+    } else {
+      const currentDir = FileUtils.getCurrentDirectory(import.meta.url);
+      this.promptsDir = path.join(currentDir, 'prompts');
+    }
   }
 
   /**

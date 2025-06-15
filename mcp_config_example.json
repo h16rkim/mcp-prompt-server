@@ -5,7 +5,10 @@
       "args": [
         "$PATH_TO_REPOSITORY/dist/index.js"
       ],
-      "env": {}
+      "env": {
+        "PROMPTS_DIR": "$PATH_TO_REPOSITORY/prompts"
+      },
+      "transport": "stdio"
     }
   }
 }

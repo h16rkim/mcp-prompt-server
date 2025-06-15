@@ -81,6 +81,26 @@ npm run dev
 
 서버는 표준 입력/출력에서 실행되며, Cursor, Windsurf 또는 기타 MCP 클라이언트에서 연결할 수 있습니다.
 
+## 환경 설정
+
+### 사용자 정의 Prompts 디렉토리
+
+기본적으로 서버는 `src/prompts` 디렉토리의 템플릿을 사용하지만, 환경변수를 통해 다른 디렉토리를 지정할 수 있습니다:
+
+```bash
+# 환경변수 설정하여 사용자 정의 prompts 디렉토리 사용
+export PROMPTS_DIR="/path/to/custom/prompts"
+npm start
+
+# 또는 실행 시 직접 설정
+PROMPTS_DIR="/path/to/custom/prompts" npm start
+```
+
+이 기능을 통해:
+- 여러 프로젝트별로 다른 prompt 템플릿 세트 사용 가능
+- 팀 공유 prompt 템플릿 디렉토리 활용 가능
+- 개인 맞춤형 prompt 템플릿 관리 가능
+
 ## 개발 스크립트
 
 - `npm run build`: TypeScript 코드 컴파일

@@ -14,6 +14,12 @@ This file provides guidance to AI assistants (Claude Code, Cursor, Windsurf, etc
 ### Dependencies
 - `npm install` - Install all dependencies
 
+### Environment Configuration
+- `PROMPTS_DIR` - Optional environment variable to specify custom prompts directory
+  - If set: Uses the specified directory path for prompt templates
+  - If not set: Uses default `src/prompts/` directory
+  - Example: `PROMPTS_DIR="/path/to/custom/prompts" npm start`
+
 ## Code Architecture
 
 This is a TypeScript-based MCP (Model Context Protocol) server that provides prompt templates as tools to AI code editors like Cursor and Windsurf.
