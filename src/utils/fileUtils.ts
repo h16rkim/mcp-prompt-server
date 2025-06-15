@@ -1,6 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { SUPPORTED_FILE_EXTENSIONS } from '../config/constants.js';
+import { ParseStrategyFactory } from './parseStrategies.js';
 
 /**
  * 파일 관련 유틸리티 함수들
@@ -18,11 +18,13 @@ export class FileUtils {
    * 지원되는 prompt 파일인지 확인
    */
   static isSupportedPromptFile(filename: string): boolean {
-    return SUPPORTED_FILE_EXTENSIONS.some(ext => filename.endsWith(ext));
+    const supportedExtensions = ParseStrategyFactory.getSupportedExtensions();
+    return supportedExtensions.some(ext => filename.toLowerCase().endsWith(ext));
   }
 
   /**
    * 파일 확장자에 따라 파싱 방법 결정
+   * @deprecated Strategy Pattern을 사용하세요
    */
   static isJsonFile(filename: string): boolean {
     return filename.endsWith('.json');

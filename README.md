@@ -36,6 +36,37 @@ npm start
 - 도구 API를 제공하여 prompt 재로드 및 사용 가능한 prompt 조회 가능
 - Cursor와 Windsurf 등의 편집기에 최적화되어 더 나은 통합 경험 제공
 - **TypeScript 지원**: TypeScript로 완전히 재작성되어 타입 안전성과 더 나은 개발 경험 제공
+- **다중 파일 형식 지원**: YAML, JSON, Markdown 파일 형식 지원
+
+## 지원하는 파일 형식
+
+### YAML/JSON 파일
+기존의 구조화된 prompt 템플릿 형식으로, 매개변수와 복잡한 설정을 지원합니다.
+
+### Markdown 파일 (NEW!)
+간단하고 직관적인 Markdown 형식으로 prompt를 작성할 수 있습니다.
+
+**Markdown 파일 규칙:**
+- **name**: 파일명 (확장자 제외)
+- **description**: 첫 번째 문장을 자동 추출 (Markdown 형식 제거)
+- **arguments**: 항상 빈 배열 (매개변수 없음)
+- **messages**: 전체 내용이 user role의 단일 메시지로 변환
+
+**예시:**
+```markdown
+# 코드 리뷰 도우미
+
+이 프롬프트는 코드 리뷰를 도와줍니다.
+
+## 주요 기능
+- 코드 품질 검토
+- 개선 사항 제안
+```
+
+위 파일은 다음과 같이 변환됩니다:
+- name: "코드리뷰도우미" (파일명 기준)
+- description: "이 프롬프트는 코드 리뷰를 도와줍니다"
+- 전체 Markdown 내용이 메시지로 사용
 
 ## 기술 스택
 
@@ -44,6 +75,7 @@ npm start
 - **MCP SDK**: Model Context Protocol 지원
 - **Zod**: 런타임 타입 검증
 - **YAML**: 설정 파일 형식 지원
+- **Strategy Pattern**: 확장 가능한 파일 파싱 아키텍처
 
 ## 디렉토리 구조
 
@@ -58,7 +90,9 @@ prompt-server/
 │   │   └── McpPromptServer.ts
 │   ├── utils/           # 유틸리티 함수들
 │   │   ├── promptLoader.ts
-│   │   └── templateProcessor.ts
+│   │   ├── templateProcessor.ts
+│   │   ├── parseStrategies.ts
+│   │   └── markdownUtils.ts
 │   └── prompts/         # 미리 설정된 prompt 템플릿 디렉토리
 │       ├── code_review.yaml
 │       ├── api_documentation.yaml
@@ -70,7 +104,8 @@ prompt-server/
 │       ├── fix.yaml
 │       ├── writing_assistant.yaml
 │       ├── prompt_template_generator.yaml
-│       └── build_mcp_server.yaml
+│       ├── build_mcp_server.yaml
+│       └── test_markdown.md
 ├── dist/                # 컴파일된 JavaScript 파일
 └── README.md            # 프로젝트 설명 문서
 ```

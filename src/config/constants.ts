@@ -7,8 +7,6 @@ export const SERVER_CONFIG = {
   version: '1.0.0',
 } as const;
 
-export const SUPPORTED_FILE_EXTENSIONS = ['.yaml', '.yml', '.json'] as const;
-
 export const DEFAULT_MESSAGES = {
   SERVER_STARTING: 'MCP Prompt Server를 시작합니다...',
   SERVER_RUNNING: 'MCP Prompt Server가 실행 중입니다...',

@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
-import YAML from 'yaml';
 import type { PromptTemplate, PromptMessage, PromptArgument } from '../types.js';
 import { FileUtils } from './fileUtils.js';
 import { Logger } from './logger.js';
 import { DEFAULT_MESSAGES, ERROR_MESSAGES } from '../config/constants.js';
+import { ParseStrategyFactory } from './parseStrategies.js';
 
 /**
  * Prompt 로더 클래스
@@ -100,16 +100,27 @@ export class PromptLoader {
     const filePath = path.join(this.promptsDir, filename);
     const content = await fs.readFile(filePath, 'utf8');
     
-    const parsedContent = FileUtils.isJsonFile(filename) 
-      ? JSON.parse(content)
-      : YAML.parse(content);
-
-    if (!this.isValidPromptTemplate(parsedContent)) {
-      Logger.warn(ERROR_MESSAGES.INVALID_PROMPT_FORMAT(filename));
+    // Strategy Pattern을 사용하여 파일 파싱
+    const parseStrategy = ParseStrategyFactory.getStrategy(filename);
+    if (!parseStrategy) {
+      Logger.warn(`지원되지 않는 파일 형식: ${filename}`);
       return null;
     }
 
-    return parsedContent;
+    try {
+      // Markdown 파싱의 경우 파일명이 필요하므로 전달
+      const parsedContent = parseStrategy.parse(content, filename);
+
+      if (!this.isValidPromptTemplate(parsedContent)) {
+        Logger.warn(ERROR_MESSAGES.INVALID_PROMPT_FORMAT(filename));
+        return null;
+      }
+
+      return parsedContent;
+    } catch (error) {
+      Logger.warn(`파일 ${filename} 파싱 중 오류: ${error}`);
+      return null;
+    }
   }
 
   /**
