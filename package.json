@@ -1,9 +1,17 @@
 {
-  "name": "mcp-prompt-server",
+  "name": "@h16rkim/mcp-prompt-server",
   "version": "1.0.0",
-  "description": "MCP服务器，提供预设的prompt工具来引导Claude执行任务",
+  "description": "MCP 서버로, 사용자 작업 요구사항에 따라 미리 설정된 prompt 템플릿을 제공하여 다양한 작업을 더 효율적으로 수행할 수 있도록 도와줍니다",
   "main": "dist/index.js",
   "type": "module",
+  "bin": {
+    "mcp-prompt-server": "dist/index.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "postbuild": "node scripts/copy-prompts.cjs",
@@ -11,16 +19,28 @@
     "dev": "tsx watch src/index.ts",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "mcp",
-    "claude",
+    "model-context-protocol",
     "prompt",
-    "ai"
+    "ai",
+    "claude",
+    "cursor",
+    "windsurf",
+    "typescript"
   ],
-  "author": "",
+  "author": "h16rkim",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/h16rkim/mcp-prompt-server.git"
+  },
+  "homepage": "https://github.com/h16rkim/mcp-prompt-server#readme",
+  "bugs": {
+    "url": "https://github.com/h16rkim/mcp-prompt-server/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
     "express": "^4.18.2",

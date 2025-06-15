@@ -4,6 +4,29 @@
 
 Model Context Protocol (MCP) 기반 서버로, 사용자 작업 요구사항에 따라 미리 설정된 prompt 템플릿을 제공하여 Cline/Cursor/Windsurf 등에서 다양한 작업을 더 효율적으로 수행할 수 있도록 도와줍니다. 서버는 미리 설정된 prompt를 도구(tools)로 반환하여 Cursor와 Windsurf 등의 편집기에서 더 나은 사용 경험을 제공합니다.
 
+## 설치
+
+### NPM을 통한 설치 (권장)
+
+```bash
+# npx를 사용하여 바로 실행
+npx -y @h16rkim/mcp-prompt-server
+
+# 또는 전역 설치
+npm install -g @h16rkim/mcp-prompt-server
+mcp-prompt-server
+```
+
+### 소스코드에서 설치
+
+```bash
+git clone https://github.com/h16rkim/mcp-prompt-server.git
+cd mcp-prompt-server
+npm install
+npm run build
+npm start
+```
+
 ## 주요 기능
 
 - 코드 리뷰, API 문서 생성, 코드 리팩토링 등의 작업에 사용할 수 있는 미리 설정된 prompt 템플릿 제공
