@@ -133,7 +133,9 @@ export class McpPromptServer {
    * Prompt 인수를 기반으로 Zod 스키마 생성
    */
   private createArgumentsSchema(prompt: PromptTemplate): ZodArgumentsSchema {
-    if (!prompt.arguments || prompt.arguments.length === 0) {
+    const isNoArguments =prompt.arguments?.length === 0
+    const isAllArgumentsAreOptional = prompt.arguments?.every(it => !it.required);
+    if (!prompt.arguments || isNoArguments || isAllArgumentsAreOptional) {
       return undefined;
     }
 
