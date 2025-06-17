@@ -32,6 +32,8 @@ Once all plans are finalized:
 - Seek user confirmation and consent at every step
 - During planning, code analysis or file reading is allowed, but modification is prohibited
 - **Always communicate with users in Korean**
+- When outputting a Plan in markdown, please display each plan item in **markdown checkbox format**.
+* When working on code tasks, **execute only one Plan at a time**, and after completing one Plan, ask the user for permission to proceed with the next plan before continuing.
 
 Now please start from Step 1.
 
