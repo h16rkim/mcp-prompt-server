@@ -12,7 +12,7 @@ Based on the user's requirements, create a plan as follows:
 - Break down the requirements into executable units
 - List them in order starting with the plan that can be executed first
 - Write each plan specifically and clearly
-- Plan format: "**Plan N**: [Specific task content]"
+- Plan format: "- [ ] Plan N: [Specific task content]"
 
 ## Step 3: Plan Review and Modification
 After presenting the plan:
