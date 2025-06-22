@@ -299,6 +299,14 @@ YAML 형식입니다.
 {{/if}}
 ```
 
+#### eqIgnoreCase (equals ignore case)
+두 값이 같은지 대소문자를 무시하고 비교합니다.
+```handlebars
+{{#if (eqIgnoreCase format "YAML")}}
+YAML 형식입니다 (대소문자 무시).
+{{/if}}
+```
+
 #### neq (not equals)
 두 값이 다른지 비교합니다.
 ```handlebars
@@ -313,6 +321,30 @@ YAML 형식입니다.
 {{#if (in language ["javascript", "typescript"])}}
 JavaScript 계열 언어입니다.
 {{/if}}
+```
+
+#### inIgnoreCase (includes ignore case)
+값이 배열에 포함되어 있는지 대소문자를 무시하고 확인합니다.
+```handlebars
+{{#inIgnoreCase format '["yaml", "yml"]'}}
+YAML 계열 형식입니다.
+{{/inIgnoreCase}}
+```
+
+#### startsWith
+문자열이 특정 문자열로 시작하는지 확인합니다.
+```handlebars
+{{#if (startsWith filename "test_")}}
+테스트 파일입니다.
+{{/if}}
+```
+
+#### raw
+Handlebars 문법을 문자 그대로 출력하고 싶을 때 사용합니다.
+```handlebars
+{{{{raw}}}}
+이 안의 {{변수}}는 처리되지 않고 그대로 출력됩니다.
+{{{{/raw}}}}
 ```
 
 ### 템플릿 예시
@@ -356,6 +388,86 @@ messages:                        # prompt 메시지 목록
       type: text                 # 콘텐츠 타입
       text: |                    # 텍스트 내용, 매개변수 플레이스홀더 {{arg_name}} 포함 가능
         Your prompt text here...
+```
+
+### YAML 템플릿에서 Arguments 사용법
+
+YAML 템플릿에서는 `arguments` 섹션에 정의된 매개변수를 Handlebars 문법으로 템플릿 내에서 사용할 수 있습니다:
+
+#### 기본 매개변수 사용
+```yaml
+arguments:
+  - name: format
+    description: 출력 형식
+    required: true
+  - name: language
+    description: 프로그래밍 언어
+    required: false
+
+messages:
+  - role: user
+    content:
+      type: text
+      text: |
+        선택된 형식: {{format}}
+        {{#if language}}
+        사용 언어: {{language}}
+        {{/if}}
+```
+
+#### 조건부 로직과 함께 사용
+```yaml
+arguments:
+  - name: format
+    description: 출력 형식 (yaml, json, markdown)
+    required: true
+
+messages:
+  - role: user
+    content:
+      type: text
+      text: |
+        {{#if (eq format "yaml")}}
+        YAML 형식으로 출력합니다.
+        {{else if (eq format "json")}}
+        JSON 형식으로 출력합니다.
+        {{else}}
+        Markdown 형식으로 출력합니다.
+        {{/if}}
+        
+        {{#inIgnoreCase format '["yaml", "yml"]'}}
+        YAML 계열 형식을 사용합니다.
+        {{/inIgnoreCase}}
+```
+
+#### 복잡한 조건부 로직 예시
+```yaml
+arguments:
+  - name: type
+    description: 작업 유형
+    required: true
+  - name: options
+    description: 추가 옵션
+    required: false
+
+messages:
+  - role: user
+    content:
+      type: text
+      text: |
+        {{#if (in type ["review", "analysis", "documentation"])}}
+        코드 관련 작업을 수행합니다: {{type}}
+        {{else}}
+        일반 작업을 수행합니다: {{type}}
+        {{/if}}
+        
+        {{#if options}}
+        추가 옵션: {{options}}
+        {{/if}}
+        
+        {{#unless options}}
+        기본 설정을 사용합니다.
+        {{/unless}}
 ```
 
 새 파일을 추가한 후, 서버는 다음 시작 시 자동으로 로드하거나 `reload_prompts` 도구를 사용하여 모든 prompt를 다시 로드할 수 있습니다.

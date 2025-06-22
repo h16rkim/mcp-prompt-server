@@ -27,7 +27,7 @@ messages:
         위 정보를 모두 알려주시면, 해당 내용으로 프롬프트 템플릿을 생성해드리겠습니다.
         
         {{#if format}}
-        **출력 형식**: {{format}} 형식으로 템플릿을 생성해주세요.
+        **출력 형식**: {{{format}}} 형식으로 템플릿을 생성해주세요.
         {{else}}
         **출력 형식**: Markdown 형식으로 템플릿을 생성해주세요.
         {{/if}}
@@ -68,8 +68,10 @@ messages:
                   type: text
                   text: |
                     프롬프트 내용...
-                    매개변수 사용: {{{{raw}}}} {{arg_name}} {{{{/raw}}}}
-                    조건부 사용: {{{{raw}}}} {{#if optional_arg}} {{{{/raw}}}}내용{{{{raw}}}} {{else}} {{{{/raw}}}}대안{{{{raw}}}} {{/if}} {{{{/raw}}}}
+                    {{{{raw}}}}
+                    매개변수 사용: {{arg_name}}
+                    조건부 사용: {{#if optional_arg}} 내용{{else}} 대안 {{/if}} 
+                    {{{{/raw}}}}
             ```
           {{/inIgnoreCase}}
 
@@ -153,9 +155,20 @@ messages:
         
         ## 매개변수 플레이스홀더 사용법
         {{{{raw}}}}
+        ### 기본 문법
+        - 변수 치환: `{{parameter_name}}`
         - 조건부 표시: `{{#if parameter_name}}내용{{/if}}`
         - 조건부 대안: `{{#if parameter_name}}내용{{else}}대안내용{{/if}}`
-        - 매개변수는 `{{parameter_name}}` 형식으로 텍스트 내에서 참조
+        - 부정 조건: `{{#unless parameter_name}}내용{{/unless}}`
+        
+        ### Helper 함수 사용법
+        - 값 비교: `{{#if (eq format "yaml")}}YAML 형식{{/if}}`
+        - 대소문자 무시 비교: `{{#if (eqIgnoreCase format "YAML")}}YAML 형식{{/if}}`
+        - 값 다름 비교: `{{#if (neq status "completed")}}미완료{{/if}}`
+        - 배열 포함 확인: `{{#if (in language ["js", "ts"])}}JavaScript 계열{{/if}}`
+        - 대소문자 무시 배열 포함: `{{#inIgnoreCase format '["yaml", "yml"]'}}YAML 계열{{/inIgnoreCase}}`
+        - 문자열 시작 확인: `{{#if (startsWith filename "test_")}}테스트 파일{{/if}}`
+        - 문자 그대로 출력: `{{{{raw}}}}{{변수}}는 처리되지 않음{{{{/raw}}}}`
         {{{{/raw}}}}
         {{/inIgnoreCase}}
         
@@ -168,7 +181,7 @@ messages:
         {{/inIgnoreCase}}
 
         {{#inIgnoreCase format '["yaml", "yml"]'}}
-          1. **완전한 {{format}} 형식 템플릿 파일 내용** (위 구조를 정확히 따름)
+          1. **완전한 {{{format}}} 형식 템플릿 파일 내용** (위 구조를 정확히 따름)
           2. **템플릿에 필요한 매개변수 목록과 설명**
           3. **적절한 매개변수 플레이스홀더를 포함한 템플릿 메시지 내용**
           4. **해당 템플릿 사용 예제**
@@ -183,4 +196,4 @@ messages:
         **중요 사항:**
         - 메시지를 출력할 때 마크다운 문서가 있다면, 온전한 마크다운의 형식으로 결과를 출력해 주세요
         - 생성할 프롬프트가 인자를 받을 것인지, 받지 않을 것인지 유저에게 물어봐야 합니다 (Markdown 형식 제외)
-        - {{format}} 형태의 올바른 파일인지 검증한 후, 유저에게 결과를 알려주세요
+        - {{{format}}} 형태의 올바른 파일인지 검증한 후, 유저에게 결과를 알려주세요
