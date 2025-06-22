@@ -3,6 +3,14 @@
 /**
  * MCP Server E2E Test Script
  * 이 스크립트는 MCP Server의 모든 tools와 prompts를 테스트합니다.
+ * 
+ * 사용법:
+ * - 전체 테스트: node scripts/e2e-test.js
+ * - 특정 프롬프트 테스트: node scripts/e2e-test.js --prompt <name> [--args <json>]
+ * 
+ * 예시:
+ * - node scripts/e2e-test.js --prompt fix
+ * - node scripts/e2e-test.js --prompt prompt --args '{"format":"markdown"}'
  */
 
 import { spawn } from 'child_process';
@@ -12,6 +20,59 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const projectDir = dirname(__dirname);
+
+// 명령행 인수 파싱
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const config = {
+    mode: 'full', // 'full' 또는 'single'
+    promptName: null,
+    promptArgs: {}
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    switch (args[i]) {
+      case '--prompt':
+        config.mode = 'single';
+        config.promptName = args[++i];
+        break;
+      case '--args':
+        try {
+          config.promptArgs = JSON.parse(args[++i]);
+        } catch (e) {
+          console.error('❌ Invalid JSON for --args parameter');
+          process.exit(1);
+        }
+        break;
+      case '--help':
+      case '-h':
+        console.log(`
+MCP Server E2E Test Script
+
+사용법:
+  node scripts/e2e-test.js                           # 전체 테스트 실행
+  node scripts/e2e-test.js --prompt <name>           # 특정 프롬프트 테스트
+  node scripts/e2e-test.js --prompt <name> --args <json>  # 인수와 함께 프롬프트 테스트
+
+예시:
+  node scripts/e2e-test.js --prompt fix
+  node scripts/e2e-test.js --prompt prompt --args '{"format":"yaml"}'
+  node scripts/e2e-test.js --prompt mockapi --args '{}'
+        `);
+        process.exit(0);
+        break;
+    }
+  }
+
+  if (config.mode === 'single' && !config.promptName) {
+    console.error('❌ --prompt 옵션에는 프롬프트 이름이 필요합니다');
+    process.exit(1);
+  }
+
+  return config;
+}
+
+const testConfig = parseArgs();
 
 // 색상 정의
 const colors = {
@@ -229,6 +290,52 @@ class MCPTester {
     }
   }
 
+  // 단일 프롬프트 테스트
+  async testSinglePrompt(promptName, promptArgs = {}) {
+    log.test(`🎯 단일 프롬프트 테스트: ${promptName}`);
+    
+    // 먼저 프롬프트가 존재하는지 확인
+    if (!this.availablePrompts.includes(promptName)) {
+      log.error(`프롬프트 '${promptName}'이 존재하지 않습니다.`);
+      log.info('사용 가능한 프롬프트들:');
+      this.availablePrompts.forEach(p => console.log(`  - ${p}`));
+      return false;
+    }
+
+    log.info(`📝 프롬프트: ${promptName}`);
+    log.info(`📋 인수: ${JSON.stringify(promptArgs, null, 2)}`);
+    
+    const params = { 
+      name: promptName, 
+      arguments: promptArgs 
+    };
+    
+    try {
+      const { response } = await this.sendMessage('prompts/get', params);
+      const success = this.validateResponse(`prompts/get (${promptName})`, response);
+      
+      if (success && response.result?.messages?.[0]?.content?.text) {
+        const content = response.result.messages[0].content.text;
+        log.info(`📄 프롬프트 응답 내용 (${content.length}자):`);
+        console.log('═'.repeat(80));
+        console.log(content);
+        console.log('═'.repeat(80));
+        
+        // 응답 메타데이터 출력
+        if (response.result.description) {
+          log.info(`📖 설명: ${response.result.description}`);
+        }
+      }
+      
+      return success;
+    } catch (error) {
+      log.error(`[${promptName}] 테스트 실패: ${error.message}`);
+      this.failedTests.push(`${promptName}: ${error.message}`);
+      this.testCount++;
+      return false;
+    }
+  }
+
   // 개별 Prompts 테스트 (처음 3개만)
   async testIndividualPrompts() {
     log.test('📋 개별 Prompts 테스트');
@@ -341,19 +448,37 @@ class MCPTester {
   }
 
   // 메인 테스트 실행
-  async run() {
-    console.log('🚀 MCP Server E2E 테스트 시작');
-    console.log('================================\n');
+  async run(config = { mode: 'full' }) {
+    if (config.mode === 'single') {
+      console.log(`🎯 단일 프롬프트 테스트: ${config.promptName}`);
+      console.log('================================\n');
+    } else {
+      console.log('🚀 MCP Server E2E 테스트 시작');
+      console.log('================================\n');
+    }
 
     try {
       await this.startServer();
 
+      // 기본 초기화는 항상 수행
       await this.testInitialize();
-      await this.testToolsList();
       await this.testPromptsList();
-      await this.testIndividualTools();
-      await this.testIndividualPrompts();
-      await this.testErrorCases();
+
+      if (config.mode === 'single') {
+        // 단일 프롬프트 테스트
+        const success = await this.testSinglePrompt(config.promptName, config.promptArgs);
+        this.testCount = 1;
+        this.successCount = success ? 1 : 0;
+        if (!success) {
+          this.failedTests = [`${config.promptName}: Test failed`];
+        }
+      } else {
+        // 전체 테스트
+        await this.testToolsList();
+        await this.testIndividualTools();
+        await this.testIndividualPrompts();
+        await this.testErrorCases();
+      }
 
       const success = this.printResults();
       return success;
@@ -378,7 +503,7 @@ async function main() {
     process.exit(1);
   });
 
-  const success = await tester.run();
+  const success = await tester.run(testConfig);
   process.exit(success ? 0 : 1);
 }
 

@@ -40,11 +40,10 @@ export class HandlebarTemplateProcessor {
     });
 
     // in helper: 값이 배열에 포함되어 있는지 확인
-    this.handlebarsInstance.registerHelper('in', function (this: any, val: any, arr: any[], options: Handlebars.HelperOptions) {
-      if (!Array.isArray(arr)) {
-        return options.inverse(this);
-      }
-      return arr.includes(val) ? options.fn(this) : options.inverse(this);
+    this.handlebarsInstance.registerHelper('in', function (this: any, val: any, arrString: any[], options: Handlebars.HelperOptions) {
+
+      const array = Array.isArray(arrString) ? arrString : JSON.parse(arrString)
+      return array.includes(val) ? options.fn(this) : options.inverse(this);
     });
 
     Logger.info('Handlebars custom helper 함수들이 등록되었습니다: eq, neq, in');
