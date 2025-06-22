@@ -2,6 +2,35 @@
 
 This file provides guidance to AI assistants (Claude Code, Cursor, Windsurf, etc.) when working with code in this repository.
 
+## File Naming Conventions
+
+### Class Files
+- **Use PascalCase** for files containing classes
+- Examples:
+  - `McpPromptServer.ts` - Contains McpPromptServer class
+  - `PromptLoader.ts` - Contains PromptLoader class
+  - `TemplateProcessor.ts` - Contains TemplateProcessor class
+  - `HandlebarTemplateProcessor.ts` - Contains HandlebarTemplateProcessor class
+  - `ParseStrategies.ts` - Contains ParseStrategy classes
+
+### Non-Class Files
+- **Use camelCase** for utility files, configuration files, and other non-class files
+- Examples:
+  - `fileUtils.ts` - Utility functions
+  - `markdownUtils.ts` - Utility functions
+  - `logger.ts` - Logging utilities
+  - `constants.ts` - Configuration constants
+  - `types.ts` - Type definitions
+
+### Import Path Guidelines
+- Always use the correct casing in import statements
+- Example:
+  ```typescript
+  import { PromptLoader } from '../utils/PromptLoader.js';
+  import { TemplateProcessor } from '../utils/TemplateProcessor.js';
+  import { fileUtils } from '../utils/fileUtils.js';
+  ```
+
 ## Development Commands
 
 ### Building and Running
@@ -34,14 +63,19 @@ The server follows a modular TypeScript architecture:
    - Provides management tools (reload_prompts, get_prompt_names, get_prompt_info)
    - Uses Zod schemas for runtime type validation
 
-2. **PromptLoader** (`src/utils/promptLoader.ts`) - Handles:
+2. **PromptLoader** (`src/utils/PromptLoader.ts`) - Handles:
    - Loading and parsing YAML/JSON prompt templates from `src/prompts/`
    - Template validation with comprehensive type checking
    - Hot-reloading of prompt templates
 
-3. **TemplateProcessor** (`src/utils/templateProcessor.ts`) - Processes:
+3. **TemplateProcessor** (`src/utils/TemplateProcessor.ts`) - Processes:
    - Parameter substitution in prompt templates
    - Template validation and error handling
+
+4. **HandlebarTemplateProcessor** (`src/utils/HandlebarTemplateProcessor.ts`) - Handles:
+   - Handlebars template engine integration
+   - Custom helper functions (eq, neq, in)
+   - Template compilation and rendering
 
 ### Key Design Decisions
 
@@ -49,6 +83,8 @@ The server follows a modular TypeScript architecture:
 - **TypeScript**: Full type safety with strict compiler settings and readonly interfaces
 - **Dynamic Loading**: Prompts can be reloaded without server restart
 - **YAML-first**: Templates are primarily YAML with JSON support
+- **Handlebars Engine**: Uses Handlebars for powerful template processing with custom helpers
+- **Strategy Pattern**: Extensible file parsing architecture for supporting multiple file formats
 
 ### Prompt Template Structure
 

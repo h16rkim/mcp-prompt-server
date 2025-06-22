@@ -3,8 +3,8 @@
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import path from 'path';
 import { McpPromptServer } from './server/McpPromptServer.js';
-import { FileUtils } from './utils/fileUtils.js';
-import { Logger } from './utils/logger.js';
+import { FileUtils } from './utils/FileUtils.js';
+import { Logger } from './utils/Logger.js';
 import { DEFAULT_MESSAGES, ERROR_MESSAGES } from './config/constants.js';
 
 /**

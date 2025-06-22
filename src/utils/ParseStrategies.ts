@@ -1,5 +1,5 @@
 import YAML from 'yaml';
-import { MarkdownUtils } from './markdownUtils.js';
+import { MarkdownUtils } from './MarkdownUtils.js';
 import type { PromptTemplate } from '../types.js';
 
 /**

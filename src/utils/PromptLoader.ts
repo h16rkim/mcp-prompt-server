@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
 import path from 'path';
 import type { PromptTemplate, PromptMessage, PromptArgument } from '../types.js';
-import { FileUtils } from './fileUtils.js';
-import { Logger } from './logger.js';
+import { FileUtils } from './FileUtils.js';
+import { Logger } from './Logger.js';
 import { DEFAULT_MESSAGES, ERROR_MESSAGES } from '../config/constants.js';
-import { ParseStrategyFactory } from './parseStrategies.js';
+import { ParseStrategyFactory } from './ParseStrategies.js';
 
 /**
  * Prompt 로더 클래스

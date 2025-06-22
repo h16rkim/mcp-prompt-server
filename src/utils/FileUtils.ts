@@ -1,6 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { ParseStrategyFactory } from './parseStrategies.js';
+import { ParseStrategyFactory } from './ParseStrategies.js';
 
 /**
  * 파일 관련 유틸리티 함수들

@@ -7,9 +7,9 @@ import type {
   ZodArgumentsSchema,
   PromptInfo
 } from '../types.js';
-import { PromptLoader } from '../utils/promptLoader.js';
-import { TemplateProcessor } from '../utils/templateProcessor.js';
-import { Logger } from '../utils/logger.js';
+import { PromptLoader } from '../utils/PromptLoader.js';
+import { TemplateProcessor } from '../utils/TemplateProcessor.js';
+import { Logger } from '../utils/Logger.js';
 import { 
   SERVER_CONFIG, 
   DEFAULT_MESSAGES, 

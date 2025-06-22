@@ -6,8 +6,8 @@ import type {
   TemplateValidationResult,
   McpMessageRole
 } from '../types.js';
-import { HandlebarTemplateProcessor } from './handlebarTemplateProcessor.js';
-import { Logger } from './logger.js';
+import { HandlebarTemplateProcessor } from './HandlebarTemplateProcessor.js';
+import { Logger } from './Logger.js';
 
 /**
  * 템플릿 처리 유틸리티 클래스

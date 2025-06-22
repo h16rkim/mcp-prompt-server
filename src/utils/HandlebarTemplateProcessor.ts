@@ -1,6 +1,6 @@
 import Handlebars from 'handlebars';
 import type { ArgumentsType } from '../types.js';
-import { Logger } from './logger.js';
+import { Logger } from './Logger.js';
 
 /**
  * Handlebars 템플릿 처리 전용 클래스
