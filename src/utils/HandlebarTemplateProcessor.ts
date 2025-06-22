@@ -34,6 +34,12 @@ export class HandlebarTemplateProcessor {
       return a === b ? options.fn(this) : options.inverse(this);
     });
 
+    // eqIgnoreCase helper: 두 값이 같은지 비교
+    this.handlebarsInstance.registerHelper('eqIgnoreCase', function (this: any, a: any, b: any, options: Handlebars.HelperOptions) {
+      return a.toLowerCase() === b.toLowerCase() ? options.fn(this) : options.inverse(this);
+    });
+
+
     // neq helper: 두 값이 다른지 비교
     this.handlebarsInstance.registerHelper('neq', function (this: any, a: any, b: any, options: Handlebars.HelperOptions) {
       return a !== b ? options.fn(this) : options.inverse(this);
@@ -46,7 +52,24 @@ export class HandlebarTemplateProcessor {
       return array.includes(val) ? options.fn(this) : options.inverse(this);
     });
 
-    Logger.info('Handlebars custom helper 함수들이 등록되었습니다: eq, neq, in');
+    // inIgnoreCase helper: 값이 배열에 포함되어 있는지 확인
+    this.handlebarsInstance.registerHelper('inIgnoreCase', function (this: any, val: any, arrString: any[], options: Handlebars.HelperOptions) {
+
+      const array = Array.isArray(arrString) ? arrString : JSON.parse(arrString)
+      const ignoreCaseArray = array.map((it: string) => it.toLowerCase())
+      return ignoreCaseArray.includes(val.toString().toLowerCase()) ? options.fn(this) : options.inverse(this);
+    });
+
+
+    // startsWith helper: 문자열이 특정 문자열로 시작하는지 확인
+    this.handlebarsInstance.registerHelper('startsWith', function (this: any, str: any, prefix: any, options: Handlebars.HelperOptions) {
+      if (typeof str !== 'string' || typeof prefix !== 'string') {
+        return options.inverse(this);
+      }
+      return str.startsWith(prefix) ? options.fn(this) : options.inverse(this);
+    });
+
+    Logger.info('Handlebars custom helper 함수들이 등록되었습니다: eq, neq, in, startsWith');
   }
 
   /**
