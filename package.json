@@ -21,7 +21,8 @@
     "dev:debug": "DEBUG=true tsx watch src/index.ts",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test:e2e": "node scripts/e2e-test.js"
   },
   "keywords": [
     "mcp",

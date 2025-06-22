@@ -179,6 +179,67 @@ PROMPTS_DIR="/path/to/custom/prompts" npx @h16rkim/mcp-prompt-server
 - `npm run start:debug`: 컴파일된 서버 시작 (디버그 로그 포함)
 - `npm run dev`: 개발 모드, 파일 변경 감지 및 자동 재시작 (로그 없음)
 - `npm run dev:debug`: 개발 모드, 파일 변경 감지 및 자동 재시작 (디버그 로그 포함)
+- `npm run test:e2e`: E2E 테스트 실행
+
+## E2E 테스트
+
+프로젝트에는 MCP Server의 모든 기능을 테스트하는 E2E 테스트가 포함되어 있습니다:
+
+```bash
+# E2E 테스트 실행
+npm run test:e2e
+
+# 또는 직접 실행
+node scripts/e2e-test.js
+```
+
+### 테스트 내용
+
+E2E 테스트는 다음 항목들을 검증합니다:
+
+1. **서버 초기화**: MCP 프로토콜 초기화
+2. **Tools 목록**: 사용 가능한 관리 도구 확인
+3. **Prompts 목록**: 사용 가능한 프롬프트 템플릿 확인
+4. **개별 Tools 테스트**: 각 관리 도구 호출 및 응답 검증
+5. **개별 Prompts 테스트**: 프롬프트 템플릿 호출 및 응답 검증
+6. **에러 케이스**: 존재하지 않는 도구/프롬프트 호출 시 적절한 에러 응답
+
+### 테스트 결과 예시
+
+```
+🚀 MCP Server E2E 테스트 시작
+================================
+
+[TEST] 🚀 Initialize 테스트
+[SUCCESS] [initialize] 성공
+
+[TEST] 🔧 Tools 목록 테스트
+[SUCCESS] [tools/list] 성공
+[INFO] 사용 가능한 Tools:
+  - reload_prompts
+  - get_prompt_names
+  - get_prompt_info
+
+[TEST] 📝 Prompts 목록 테스트
+[SUCCESS] [prompts/list] 성공
+[INFO] 사용 가능한 Prompts:
+  - build_mcp_server
+  - commit_and_push
+  - convert
+  - fix
+  - mockapi
+  - plan
+  - prompt
+
+============================================================
+[INFO] 🧪 E2E 테스트 결과
+============================================================
+[INFO] 총 테스트: 11
+[SUCCESS] 성공: 11
+[ERROR] 실패: 0
+
+[SUCCESS] 🎉 모든 테스트가 성공했습니다!
+```
 
 ## 디버그 모드
 
