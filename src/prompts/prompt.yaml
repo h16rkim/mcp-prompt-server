@@ -3,7 +3,7 @@ description: 사용자가 새로운 프롬프트 템플릿을 생성하고 싶�
 arguments:
   - name: format
     description: "출력할 템플릿 형식 (yaml, json, markdown 중 선택, 기본값: markdown)"
-    required: false
+    required: true
 messages:
   - role: user
     content:
@@ -31,143 +31,149 @@ messages:
         간단하고 직관적인 Markdown 형식으로, 매개변수 없이 순수 텍스트 프롬프트를 작성합니다.
         
         {{#if format}}
-        ## YAML 템플릿 구조 가이드라인
-        
-        다음 구조를 정확히 따라 YAML 파일을 생성해주세요:
-        
-        ### 매개변수가 없는 경우
-        ```yaml
-        name: name
-        description: 프롬프트 기능에 대한 한국어 설명
-        arguments: []
-        messages:
-          - role: user
-            content:
-              type: text
-              text: |
-                프롬프트 내용...
-        ```
-        
-        ### 매개변수가 있는 경우
-        ```yaml
-        name: name
-        description: 프롬프트 기능에 대한 한국어 설명
-        arguments:
-          - name: arg_name
-            description: 매개변수에 대한 한국어 설명
-            required: true
-          - name: optional_arg
-            description: 선택적 매개변수 설명
-            required: false
-        messages:
-          - role: user
-            content:
-              type: text
-              text: |
-                프롬프트 내용...
-                매개변수 사용: {​{arg_name}​}
-                조건부 사용: {​{#if optional_arg}​}내용{​{else}​}대안{​{/if}​}
-        ```
-        ## JSON 템플릿 구조 가이드라인
-        
-        다음 구조를 정확히 따라 JSON 파일을 생성해주세요:
-        
-        ### 매개변수가 없는 경우
-        ```json
-        {
-          "name": "name",
-          "description": "프롬프트 기능에 대한 한국어 설명",
-          "arguments": [],
-          "messages": [
+          {{#eq format "yaml"}}
+            ## YAML 템플릿 구조 가이드라인
+            
+            다음 구조를 정확히 따라 YAML 파일을 생성해주세요:
+            
+            ### 매개변수가 없는 경우
+            ```yaml
+            name: name
+            description: 프롬프트 기능에 대한 한국어 설명
+            arguments: []
+            messages:
+              - role: user
+                content:
+                  type: text
+                  text: |
+                    프롬프트 내용...
+            ```
+            
+            ### 매개변수가 있는 경우
+            ```yaml
+            name: name
+            description: 프롬프트 기능에 대한 한국어 설명
+            arguments:
+              - name: arg_name
+                description: 매개변수에 대한 한국어 설명
+                required: true
+              - name: optional_arg
+                description: 선택적 매개변수 설명
+                required: false
+            messages:
+              - role: user
+                content:
+                  type: text
+                  text: |
+                    프롬프트 내용...
+                    매개변수 사용: {​{arg_name}​}
+                    조건부 사용: {​{#if optional_arg}​}내용{​{else}​}대안{​{/if}​}
+            ```
+          {{/eq}}
+          {{#eq format "json"}}
+            ## JSON 템플릿 구조 가이드라인
+            
+            다음 구조를 정확히 따라 JSON 파일을 생성해주세요:
+            
+            ### 매개변수가 없는 경우
+            ```json
             {
-              "role": "user",
-              "content": {
-                "type": "text",
-                "text": "프롬프트 내용..."
-              }
+              "name": "name",
+              "description": "프롬프트 기능에 대한 한국어 설명",
+              "arguments": [],
+              "messages": [
+                {
+                  "role": "user",
+                  "content": {
+                    "type": "text",
+                    "text": "프롬프트 내용..."
+                  }
+                }
+              ]
             }
-          ]
-        }
-        ```
-        
-        ### 매개변수가 있는 경우
-        ```json
-        {
-          "name": "name",
-          "description": "프롬프트 기능에 대한 한국어 설명",
-          "arguments": [
+            ```
+            
+            ### 매개변수가 있는 경우
+            ```json
             {
-              "name": "arg_name",
-              "description": "매개변수에 대한 한국어 설명",
-              "required": true
-            },
-            {
-              "name": "optional_arg",
-              "description": "선택적 매개변수 설명",
-              "required": false
+              "name": "name",
+              "description": "프롬프트 기능에 대한 한국어 설명",
+              "arguments": [
+                {
+                  "name": "arg_name",
+                  "description": "매개변수에 대한 한국어 설명",
+                  "required": true
+                },
+                {
+                  "name": "optional_arg",
+                  "description": "선택적 매개변수 설명",
+                  "required": false
+                }
+              ],
+              "messages": [
+                {
+                  "role": "user",
+                  "content": {
+                    "type": "text",
+                    "text": "프롬프트 내용...\n매개변수 사용: {​{arg_name}​}\n조건부 사용: {​{#if optional_arg}​}내용{​{else}​}대안{​{/if}​}"
+                  }
+                }
+              ]
             }
-          ],
-          "messages": [
-            {
-              "role": "user",
-              "content": {
-                "type": "text",
-                "text": "프롬프트 내용...\n매개변수 사용: {​{arg_name}​}\n조건부 사용: {​{#if optional_arg}​}내용{​{else}​}대안{​{/if}​}"
-              }
-            }
-          ]
-        }
-        ```
-        ## Markdown 템플릿 가이드라인
-        
-        Markdown 형식은 간단하고 직관적입니다:
-        - **name**: 파일명 (확장자 제외)
-        - **description**: 첫 번째 문장을 자동 추출
-        - **arguments**: 항상 없음 (매개변수 지원 안함)
-        - **messages**: 전체 내용이 user role의 단일 메시지로 변환
-        
-        ### Markdown 템플릿 예시
-        ```markdown
-        # 프롬프트 제목
-        
-        이것은 프롬프트의 설명입니다.
-        
-        ## 주요 기능
-        - 기능 1
-        - 기능 2
-        
-        ### 사용 방법
-        1. 단계 1
-        2. 단계 2
-        
-        프롬프트의 상세 내용을 여기에 작성합니다.
-        ```
+            ```
+          {{/eq}}
+          {{#eq format "markdown"}}
+            ## Markdown 템플릿 가이드라인
+            
+            Markdown 형식은 간단하고 직관적입니다:
+            - **name**: 파일명 (확장자 제외)
+            - **description**: 첫 번째 문장을 자동 추출
+            - **arguments**: 항상 없음 (매개변수 지원 안함)
+            - **messages**: 전체 내용이 user role의 단일 메시지로 변환
+            
+            ### Markdown 템플릿 예시
+            ```markdown
+            # 프롬프트 제목
+            
+            이것은 프롬프트의 설명입니다.
+            
+            ## 주요 기능
+            - 기능 1
+            - 기능 2
+            
+            ### 사용 방법
+            1. 단계 1
+            2. 단계 2
+            
+            프롬프트의 상세 내용을 여기에 작성합니다.
+            ```
+          {{/eq}}
         {{/if}}
         {{else}}
-        ## Markdown 템플릿 가이드라인 (기본값)
-        
-        Markdown 형식은 간단하고 직관적입니다:
-        - **name**: 파일명 (확장자 제외)
-        - **description**: 첫 번째 문장을 자동 추출
-        - **arguments**: 항상 없음 (매개변수 지원 안함)
-        - **messages**: 전체 내용이 user role의 단일 메시지로 변환
-        
-        ### Markdown 템플릿 예시
-        ```markdown
-        # 프롬프트 제목
-        
-        이것은 프롬프트의 설명입니다.
-        
-        ## 주요 기능
-        - 기능 1
-        - 기능 2
-        
-        ### 사용 방법
-        1. 단계 1
-        2. 단계 2
-        
-        프롬프트의 상세 내용을 여기에 작성합니다.
-        ```
+          ## Markdown 템플릿 가이드라인 (기본값)
+          
+          Markdown 형식은 간단하고 직관적입니다:
+          - **name**: 파일명 (확장자 제외)
+          - **description**: 첫 번째 문장을 자동 추출
+          - **arguments**: 항상 없음 (매개변수 지원 안함)
+          - **messages**: 전체 내용이 user role의 단일 메시지로 변환
+          
+          ### Markdown 템플릿 예시
+          ```markdown
+          # 프롬프트 제목
+          
+          이것은 프롬프트의 설명입니다.
+          
+          ## 주요 기능
+          - 기능 1
+          - 기능 2
+          
+          ### 사용 방법
+          1. 단계 1
+          2. 단계 2
+          
+          프롬프트의 상세 내용을 여기에 작성합니다.
+          ```
         {{/if}}
         
         ## 공통 필드 규칙
@@ -201,22 +207,26 @@ messages:
         ## 요구사항
         다음을 모두 제공해주세요:
         {{#if format}}
-        **{{format}}이 Markdown일 경우**
-        1. **완전한 Markdown 형식 템플릿 파일 내용**
-        2. **해당 템플릿 사용 예제**
-        3. **파일명 제안** (`src/prompts/{​{name}​}.md` 형식)
-        **{{format}}이 YAML일 경우**
-        1. **완전한 {{format}} 형식 템플릿 파일 내용** (위 구조를 정확히 따름)
-        2. **템플릿에 필요한 매개변수 목록과 설명**
-        3. **적절한 매개변수 플레이스홀더를 포함한 템플릿 메시지 내용**
-        4. **해당 템플릿 사용 예제**
-        5. **파일명 제안** (`src/prompts/{​{name}​}.yaml` 형식)
-        **{{format}}이 JSON일 경우**
-        1. **완전한 {{format}} 형식 템플릿 파일 내용** (위 구조를 정확히 따름)
-        2. **템플릿에 필요한 매개변수 목록과 설명**
-        3. **적절한 매개변수 플레이스홀더를 포함한 템플릿 메시지 내용**
-        4. **해당 템플릿 사용 예제**
-        5. **파일명 제안** (`src/prompts/{​{name}​}.json` 형식)
+          {{#eq format "markdown"}}
+            1. **완전한 Markdown 형식 템플릿 파일 내용**
+            2. **해당 템플릿 사용 예제**
+            3. **파일명 제안** (`src/prompts/{​{name}​}.md` 형식)
+          {{/eq}}
+          {{#eq format "yaml"}}
+            **{{format}}이 YAML일 경우**
+            1. **완전한 {{format}} 형식 템플릿 파일 내용** (위 구조를 정확히 따름)
+            2. **템플릿에 필요한 매개변수 목록과 설명**
+            3. **적절한 매개변수 플레이스홀더를 포함한 템플릿 메시지 내용**
+            4. **해당 템플릿 사용 예제**
+            5. **파일명 제안** (`src/prompts/{​{name}​}.yaml` 형식)
+          {{/eq}}
+          {{#eq format "json"}}
+            1. **완전한 {{format}} 형식 템플릿 파일 내용** (위 구조를 정확히 따름)
+            2. **템플릿에 필요한 매개변수 목록과 설명**
+            3. **적절한 매개변수 플레이스홀더를 포함한 템플릿 메시지 내용**
+            4. **해당 템플릿 사용 예제**
+            5. **파일명 제안** (`src/prompts/{​{name}​}.json` 형식)
+          {{/eq}}
         {{/if}}
         99. (템플릿 생성 후) 결과를 클립보드에 복사: `echo "결과" | pbcopy`
         
