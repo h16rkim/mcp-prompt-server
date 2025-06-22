@@ -175,8 +175,31 @@ PROMPTS_DIR="/path/to/custom/prompts" npx @h16rkim/mcp-prompt-server
 
 - `npm run build`: TypeScript 코드 컴파일
 - `npm run clean`: 컴파일 출력 디렉토리 정리
-- `npm start`: 컴파일된 서버 시작
-- `npm run dev`: 개발 모드, 파일 변경 감지 및 자동 재시작
+- `npm start`: 컴파일된 서버 시작 (로그 없음)
+- `npm run start:debug`: 컴파일된 서버 시작 (디버그 로그 포함)
+- `npm run dev`: 개발 모드, 파일 변경 감지 및 자동 재시작 (로그 없음)
+- `npm run dev:debug`: 개발 모드, 파일 변경 감지 및 자동 재시작 (디버그 로그 포함)
+
+## 디버그 모드
+
+MCP Server는 기본적으로 로그를 출력하지 않습니다. 이는 MCP의 stdio 통신을 방해하지 않기 위함입니다.
+
+디버그 로그를 보려면 `DEBUG=true` 환경변수를 설정하세요:
+
+```bash
+# 디버그 로그와 함께 서버 실행
+DEBUG=true npm start
+
+# 또는 디버그 스크립트 사용
+npm run start:debug
+
+# 개발 모드에서 디버그 로그
+npm run dev:debug
+```
+
+**주의사항:**
+- 디버그 로그는 `stderr`로 출력되어 MCP의 JSON-RPC 통신(`stdout`)과 분리됩니다
+- 프로덕션 환경에서는 `DEBUG=false` 또는 환경변수를 설정하지 않는 것을 권장합니다
 
 ## Handlebars 템플릿 엔진
 
