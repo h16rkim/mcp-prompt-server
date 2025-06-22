@@ -77,20 +77,15 @@ export class PromptLoader {
    * prompt 파일들을 파싱하여 PromptTemplate 배열로 변환
    */
   private async parsePromptFiles(promptFiles: string[]): Promise<PromptTemplate[]> {
-    const prompts: PromptTemplate[] = [];
-
-    for (const file of promptFiles) {
+    const results = await Promise.all(promptFiles.map(async (file) => {
       try {
-        const prompt = await this.parsePromptFile(file);
-        if (prompt) {
-          prompts.push(prompt);
-        }
+        return await this.parsePromptFile(file);
       } catch (error) {
         Logger.warn(`파일 ${file} 파싱 중 오류: ${error}`);
+        return null;
       }
-    }
-
-    return prompts;
+    }));
+    return results.filter((prompt): prompt is PromptTemplate => prompt !== null);
   }
 
   /**

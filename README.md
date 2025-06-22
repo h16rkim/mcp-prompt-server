@@ -31,12 +31,13 @@ npm start
 
 - 코드 리뷰, API 문서 생성, 코드 리팩토링 등의 작업에 사용할 수 있는 미리 설정된 prompt 템플릿 제공
 - 모든 prompt 템플릿을 MCP prompts 형식이 아닌 MCP 도구(tools)로 제공
-- 동적 매개변수 치환을 지원하여 prompt 템플릿을 더욱 유연하게 사용
+- **Handlebars 템플릿 엔진**: 강력한 템플릿 처리 기능으로 동적 매개변수 치환 및 조건부 로직 지원
 - 개발자가 자유롭게 prompt 템플릿을 추가하고 수정할 수 있음
 - 도구 API를 제공하여 prompt 재로드 및 사용 가능한 prompt 조회 가능
 - Cursor와 Windsurf 등의 편집기에 최적화되어 더 나은 통합 경험 제공
 - **TypeScript 지원**: TypeScript로 완전히 재작성되어 타입 안전성과 더 나은 개발 경험 제공
 - **다중 파일 형식 지원**: YAML, JSON, Markdown 파일 형식 지원
+- **Strategy Pattern**: 확장 가능한 파일 파싱 아키텍처로 새로운 파일 형식 쉽게 추가 가능
 
 ## 지원하는 파일 형식
 
@@ -75,6 +76,7 @@ npm start
 - **MCP SDK**: Model Context Protocol 지원
 - **Zod**: 런타임 타입 검증
 - **YAML**: 설정 파일 형식 지원
+- **Handlebars**: 강력한 템플릿 엔진으로 조건부 로직 및 helper 함수 지원
 - **Strategy Pattern**: 확장 가능한 파일 파싱 아키텍처
 
 ## 디렉토리 구조
@@ -91,6 +93,7 @@ prompt-server/
 │   ├── utils/           # 유틸리티 함수들
 │   │   ├── promptLoader.ts
 │   │   ├── templateProcessor.ts
+│   │   ├── handlebarTemplateProcessor.ts
 │   │   ├── parseStrategies.ts
 │   │   └── markdownUtils.ts
 │   └── prompts/         # 미리 설정된 prompt 템플릿 디렉토리
@@ -143,7 +146,7 @@ npm run dev
 
 ### 사용자 정의 Prompts 디렉토리
 
-기본적으로 서버는 `src/prompts` 디렉토리의 템플릿을 사용하지만, 환경변수를 통해 다른 디렉토리를 지정할 수 있습니다:
+기본적으로 서버는 `src/prompts` 디렉토리의 템플릿을 사용하지만, `PROMPTS_DIR` 환경변수를 통해 다른 디렉토리를 지정할 수 있습니다:
 
 ```bash
 # 환경변수 설정하여 사용자 정의 prompts 디렉토리 사용
@@ -152,7 +155,16 @@ npm start
 
 # 또는 실행 시 직접 설정
 PROMPTS_DIR="/path/to/custom/prompts" npm start
+
+# npx 사용 시
+PROMPTS_DIR="/path/to/custom/prompts" npx @h16rkim/mcp-prompt-server
 ```
+
+**PROMPTS_DIR 설정 시 주의사항:**
+- 지정된 디렉토리에 있는 모든 `.yaml`, `.json`, `.md` 파일을 프롬프트 템플릿으로 인식합니다
+- 파일 형식은 본 문서의 "지원하는 파일 형식" 섹션을 참고하세요
+- 디렉토리가 존재하지 않으면 자동으로 생성됩니다
+- 서버 실행 중에도 `reload_prompts` 도구를 사용하여 변경사항을 반영할 수 있습니다
 
 이 기능을 통해:
 - 여러 프로젝트별로 다른 prompt 템플릿 세트 사용 가능
@@ -165,6 +177,83 @@ PROMPTS_DIR="/path/to/custom/prompts" npm start
 - `npm run clean`: 컴파일 출력 디렉토리 정리
 - `npm start`: 컴파일된 서버 시작
 - `npm run dev`: 개발 모드, 파일 변경 감지 및 자동 재시작
+
+## Handlebars 템플릿 엔진
+
+이 서버는 **Handlebars** 템플릿 엔진을 사용하여 강력하고 유연한 템플릿 처리를 제공합니다.
+
+### 기본 문법
+
+```handlebars
+# 변수 치환
+안녕하세요 {{name}}님!
+
+# 조건부 표시
+{{#if format}}
+선택된 형식: {{format}}
+{{else}}
+기본 형식을 사용합니다.
+{{/if}}
+
+# 부정 조건
+{{#unless disabled}}
+이 기능은 활성화되어 있습니다.
+{{/unless}}
+```
+
+### Custom Helper 함수
+
+서버에서 제공하는 추가 helper 함수들:
+
+#### eq (equals)
+두 값이 같은지 비교합니다.
+```handlebars
+{{#if (eq format "yaml")}}
+YAML 형식입니다.
+{{else}}
+다른 형식입니다.
+{{/if}}
+```
+
+#### neq (not equals)
+두 값이 다른지 비교합니다.
+```handlebars
+{{#if (neq status "completed")}}
+아직 완료되지 않았습니다.
+{{/if}}
+```
+
+#### in (includes)
+값이 배열에 포함되어 있는지 확인합니다.
+```handlebars
+{{#if (in language ["javascript", "typescript"])}}
+JavaScript 계열 언어입니다.
+{{/if}}
+```
+
+### 템플릿 예시
+
+```handlebars
+# {{title}} 프롬프트
+
+{{description}}
+
+{{#if (eq format "yaml")}}
+## YAML 형식 가이드라인
+YAML 구조를 따라 작성해주세요.
+{{/if}}
+
+{{#if (eq format "json")}}
+## JSON 형식 가이드라인
+JSON 구조를 따라 작성해주세요.
+{{/if}}
+
+{{#if (neq format "markdown")}}
+구조화된 형식을 사용합니다.
+{{else}}
+Markdown 형식을 사용합니다.
+{{/if}}
+```
 
 ## 새로운 Prompt 템플릿 추가
 
@@ -202,6 +291,8 @@ messages:                        # prompt 메시지 목록
 - **McpPromptServer**: 주요 MCP 서버 클래스
 - **PromptLoader**: Prompt 템플릿 로더
 - **TemplateProcessor**: 템플릿 처리 도구
+- **HandlebarTemplateProcessor**: Handlebars 템플릿 엔진 처리
+- **ParseStrategyFactory**: 파일 파싱 전략 팩토리
 
 ### 확장 개발
 
@@ -312,5 +403,8 @@ Windsurf에서 다음 방법으로 MCP 설정에 접근합니다:
 3. prompt 분류 및 태그 추가
 4. prompt 사용 통계 및 분석 구현
 5. 사용자 피드백 메커니즘 추가
-6. 더 많은 템플릿 구문 지원 (조건문, 반복문 등)
+6. 더 많은 Handlebars helper 함수 추가 (날짜, 문자열 처리 등)
 7. prompt 템플릿 검증 및 테스트 기능 추가
+8. 새로운 파일 형식 지원 (Strategy Pattern 활용)
+9. 템플릿 캐싱 및 성능 최적화
+10. 다국어 지원 및 국제화
