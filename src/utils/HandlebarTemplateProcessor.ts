@@ -69,6 +69,12 @@ export class HandlebarTemplateProcessor {
       return str.startsWith(prefix) ? options.fn(this) : options.inverse(this);
     });
 
+    // {{{{raw}}}} {{{{/raw}}}} 로 감싸면 문자 그대로 출력됨
+    this.handlebarsInstance.registerHelper('raw', function(options) {
+      return options.fn();
+    });
+
+
     Logger.info('Handlebars custom helper 함수들이 등록되었습니다: eq, neq, in, startsWith');
   }
 
