@@ -1,6 +1,6 @@
 {
   "name": "@h16rkim/mcp-prompt-server",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "MCP 서버로, 사용자 작업 요구사항에 따라 미리 설정된 prompt 템플릿을 제공하여 다양한 작업을 더 효율적으로 수행할 수 있도록 도와줍니다",
   "main": "dist/index.js",
   "type": "module",

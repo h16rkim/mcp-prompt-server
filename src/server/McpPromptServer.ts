@@ -93,7 +93,7 @@ export class McpPromptServer {
       prompt.name,
       argumentsSchema!,
       async (args: ArgumentsType) => {
-        return this.processPromptWithValidation(prompt, args);
+        return this.processPromptWithValidation(prompt, args ?? {});
       }
     );
   }
