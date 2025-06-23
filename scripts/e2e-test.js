@@ -11,6 +11,7 @@
  * 예시:
  * - node scripts/e2e-test.js --prompt fix
  * - node scripts/e2e-test.js --prompt prompt --args '{"format":"markdown"}'
+ * - node scripts/e2e-test.js --prompt edit --args '{"target":"안녕하세요"}'
  */
 
 import { spawn } from 'child_process';
