@@ -91,9 +91,10 @@ export class McpPromptServer {
   ): void {
     this.server.prompt(
       prompt.name,
-      argumentsSchema!,
+      prompt.description,
+      argumentsSchema ?? {},
       async (args: ArgumentsType) => {
-        return this.processPromptWithValidation(prompt, args ?? {});
+        return this.processPromptWithValidation(prompt, args || {});
       }
     );
   }
@@ -104,7 +105,7 @@ export class McpPromptServer {
   private registerPromptWithoutArguments(prompt: PromptTemplate): void {
     this.server.prompt(
       prompt.name,
-      `Prompt: ${prompt.name}`,
+      prompt.description,
       async () => {
         return TemplateProcessor.processPromptTemplate(prompt, {});
       }
