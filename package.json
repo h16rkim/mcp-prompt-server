@@ -22,7 +22,6 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run build",
-    "test:e2e": "node scripts/e2e-test.js",
     "test:prompt": "node scripts/e2e-test.js --prompt"
   },
   "keywords": [
