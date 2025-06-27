@@ -56,6 +56,13 @@ Implementation follows these conventions:
 - **Kotlin**: Use Data Class, implement nested structures with Nested Data Class
 - **Typescript**: One class per file, separate nested structures into individual files
 
+**UTC Field Handling:**
+- Field names ending with `~UTC` have the format `"2023-10-01T03:00:00.000Z"`
+- If DTOs contain fields ending with `~UTC`, the following processing is required:
+  - **Request DTO**: Convert the string to LocalDateTime
+  - **Response DTO**: Convert LocalDateTime to the above string format
+- Reference other DTO files to implement the above logic correctly
+
 **Reference Implementation Guidelines:**
 - Please refer to existing Controller DTO files for implementation patterns
 - Follow file naming conventions: Request DTOs use `~Request.kt`/`~Request.ts`, Response DTOs use `~Response.kt`/`~Response.ts`
