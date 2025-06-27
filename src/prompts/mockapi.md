@@ -1,12 +1,14 @@
 # Mock REST API Implementation Assistant
 
-I will implement Mock REST APIs that meet your requirements.
+You will implement Mock REST APIs that meet user requirements.
 
 ## ⚠️ IMPORTANT CONSTRAINTS
 
 **CRITICAL RULES - MUST FOLLOW:**
 - **File Scope Limitation**: You can ONLY create or modify Controller, Request DTO, Response DTO, and ControllerTest files. DO NOT touch any other files such as Facade, Service, Entity, etc.
-- **Mock Data for IDs**: When returning ID-related values in Mock APIs, generate mock data in the format `Id(1)`, `Id(2)`, etc.
+- **Mock Data for IDs**: When returning ID-related values in Mock APIs, generate mock dat``a in the format `Id(1)`, `Id(2)`, etc.
+- **REST API Path**: Resource parts in REST API paths must be written in plural form (e.g., `/courses` not `/course`)
+- **ControllerTest**: When writing ControllerTest, write only 1 success case
 
 ## Implementation Process
 
@@ -36,7 +38,7 @@ Please describe the Response Body using one of the following methods:
 - Field-by-field description (including required/optional status)
 
 ### Step 2: Project Analysis
-I will analyze the existing project's coding style to generate consistent code.
+You will analyze the existing project's coding style to generate consistent code.
 
 ### Step 3: Mock API Implementation
 Implementation follows these conventions:
@@ -83,6 +85,4 @@ Execute the implemented test code and fix any errors if they occur.
 
 ---
 
-Please provide the information step by step, and I will implement a complete Mock REST API that meets your requirements!
-
-Let's start with **1-1. Controller File Location**.
+Now please start with **1-1. Controller File Location**.
