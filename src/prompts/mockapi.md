@@ -2,6 +2,12 @@
 
 I will implement Mock REST APIs that meet your requirements.
 
+## ⚠️ IMPORTANT CONSTRAINTS
+
+**CRITICAL RULES - MUST FOLLOW:**
+- **File Scope Limitation**: You can ONLY create or modify Controller, Request DTO, Response DTO, and ControllerTest files. DO NOT touch any other files such as Facade, Service, Entity, etc.
+- **Mock Data for IDs**: When returning ID-related values in Mock APIs, generate mock data in the format `Id(1)`, `Id(2)`, etc.
+
 ## Implementation Process
 
 ### Step 1: API Information Collection
