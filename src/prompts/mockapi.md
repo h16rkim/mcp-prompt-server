@@ -48,6 +48,10 @@ Implementation follows these conventions:
 - **Controller**: `~Controller.ts` / `~Controller.kt`
 - **Controller Test**: `~ControllerTest.ts` / `~ControllerTest.kt`
 
+**Version-based Controller Naming:**
+- **For `/client/api/v2` or higher versions**: Use `Client~ControllerV2.[kt|ts]` naming convention
+- **For `/api/v2` or higher versions**: Use `~ControllerV2.[kt|ts]` naming convention
+
 #### DTO Implementation Rules
 - **Kotlin**: Use Data Class, implement nested structures with Nested Data Class
 - **Typescript**: One class per file, separate nested structures into individual files
