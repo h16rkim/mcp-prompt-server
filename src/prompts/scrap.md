@@ -31,8 +31,6 @@ A reader must fully understand discussions and requirements **without opening ex
 - **Web** → `## Web Page: <title>`  
 - **Recursive**: follow all relevant links found inside content and insert under  
   `### Referenced Link: <title or identifier>`  
-- **Confluence Recursive Rule**: if the Confluence page includes links to **other internal Confluence documents**, scrape those linked pages as well.  
-    - ex) `<a href=\"https://inflab.atlassian.net/wiki/spaces/UCC/pages/2076246048/...\" data-linked-resource-id=\"2076246048\" data-linked-resource-version=\"10\" data-linked-resource-type=\"page\">유저스토리) 상세페이지/수강생관리 개선</a>`
 
 
 ### 2) Convert to Markdown
