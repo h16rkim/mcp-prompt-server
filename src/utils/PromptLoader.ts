@@ -11,26 +11,31 @@ import { ParseStrategyFactory } from './ParseStrategies.js';
  * Prompt 템플릿 파일들을 로드하고 검증하는 역할을 담당
  */
 export class PromptLoader {
-  private readonly promptsDir: string;
+  private readonly promptsDirs: string[];
   private loadedPrompts: PromptTemplate[] = [];
 
-  constructor(promptsDir: string) {
-    this.promptsDir = promptsDir;
+  constructor(promptsDirs: string[]) {
+    this.promptsDirs = promptsDirs;
   }
 
   /**
-   * prompts 디렉토리에서 모든 미리 설정된 prompt 로드
+   * prompts 디렉토리들에서 모든 미리 설정된 prompt 로드
    */
   async loadPrompts(): Promise<PromptTemplate[]> {
     try {
-      await this.ensurePromptsDirectory();
-      const promptFiles = await this.getPromptFiles();
-      const prompts = await this.parsePromptFiles(promptFiles);
+      await this.ensurePromptsDirectories();
+      const allPrompts: PromptTemplate[] = [];
       
-      this.loadedPrompts = prompts;
-      Logger.info(DEFAULT_MESSAGES.PROMPTS_LOADED(prompts.length));
+      for (const promptsDir of this.promptsDirs) {
+        const promptFiles = await this.getPromptFiles(promptsDir);
+        const prompts = await this.parsePromptFiles(promptFiles, promptsDir);
+        allPrompts.push(...prompts);
+      }
       
-      return prompts;
+      this.loadedPrompts = allPrompts;
+      Logger.info(DEFAULT_MESSAGES.PROMPTS_LOADED(allPrompts.length));
+      
+      return allPrompts;
     } catch (error) {
       Logger.error(ERROR_MESSAGES.PROMPTS_LOAD_FAILED, error);
       return [];
@@ -59,27 +64,29 @@ export class PromptLoader {
   }
 
   /**
-   * prompts 디렉토리 존재 확인 및 생성
+   * prompts 디렉토리들 존재 확인 및 생성
    */
-  private async ensurePromptsDirectory(): Promise<void> {
-    await fs.ensureDir(this.promptsDir);
+  private async ensurePromptsDirectories(): Promise<void> {
+    for (const promptsDir of this.promptsDirs) {
+      await fs.ensureDir(promptsDir);
+    }
   }
 
   /**
    * prompt 파일 목록 가져오기
    */
-  private async getPromptFiles(): Promise<string[]> {
-    const files = await fs.readdir(this.promptsDir);
+  private async getPromptFiles(promptsDir: string): Promise<string[]> {
+    const files = await fs.readdir(promptsDir);
     return FileUtils.filterPromptFiles(files);
   }
 
   /**
    * prompt 파일들을 파싱하여 PromptTemplate 배열로 변환
    */
-  private async parsePromptFiles(promptFiles: string[]): Promise<PromptTemplate[]> {
+  private async parsePromptFiles(promptFiles: string[], promptsDir: string): Promise<PromptTemplate[]> {
     const results = await Promise.all(promptFiles.map(async (file) => {
       try {
-        return await this.parsePromptFile(file);
+        return await this.parsePromptFile(file, promptsDir);
       } catch (error) {
         Logger.warn(`파일 ${file} 파싱 중 오류: ${error}`);
         return null;
@@ -91,8 +98,8 @@ export class PromptLoader {
   /**
    * 개별 prompt 파일 파싱
    */
-  private async parsePromptFile(filename: string): Promise<PromptTemplate | null> {
-    const filePath = path.join(this.promptsDir, filename);
+  private async parsePromptFile(filename: string, promptsDir: string): Promise<PromptTemplate | null> {
+    const filePath = path.join(promptsDir, filename);
     const content = await fs.readFile(filePath, 'utf8');
     
     // Strategy Pattern을 사용하여 파일 파싱

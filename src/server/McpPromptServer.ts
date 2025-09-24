@@ -26,9 +26,9 @@ export class McpPromptServer {
   private readonly server: McpServer;
   private readonly promptLoader: PromptLoader;
 
-  constructor(promptsDir: string) {
+  constructor(promptsDirs: string[]) {
     this.server = new McpServer(SERVER_CONFIG);
-    this.promptLoader = new PromptLoader(promptsDir);
+    this.promptLoader = new PromptLoader(promptsDirs);
   }
 
   /**

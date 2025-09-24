@@ -12,16 +12,19 @@ import { DEFAULT_MESSAGES, ERROR_MESSAGES } from './config/constants.js';
  * 메인 엔트리 포인트
  */
 class Application {
-  private readonly promptsDir: string;
+  private readonly promptsDirs: string[];
   private mcpPromptServer?: McpPromptServer;
 
   constructor() {
-    // 환경변수 PROMPTS_DIR이 있으면 해당 경로 사용, 없으면 기본 경로 사용
-    if (process.env.PROMPTS_DIR) {
-      this.promptsDir = path.resolve(process.env.PROMPTS_DIR);
+    // 환경변수 PROMPTS_DIRS가 있으면 해당 경로들 사용, 없으면 기본 경로 사용
+    if (process.env.PROMPTS_DIRS) {
+      this.promptsDirs = process.env.PROMPTS_DIRS
+        .split(',')
+        .map(dir => path.resolve(dir.trim()))
+        .filter(dir => dir.length > 0);
     } else {
       const currentDir = FileUtils.getCurrentDirectory(import.meta.url);
-      this.promptsDir = path.join(currentDir, 'prompts');
+      this.promptsDirs = [path.join(currentDir, 'prompts')];
     }
   }
 
@@ -44,7 +47,7 @@ class Application {
    * 서버 초기화
    */
   private async initializeServer(): Promise<void> {
-    this.mcpPromptServer = new McpPromptServer(this.promptsDir);
+    this.mcpPromptServer = new McpPromptServer(this.promptsDirs);
     await this.mcpPromptServer.initialize();
     
     const promptCount = this.mcpPromptServer.getPromptsCount();
