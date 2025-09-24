@@ -203,8 +203,9 @@ export class McpPromptServer {
   private registerGetPromptInfoTools(): void {
     this.server.tool(
       TOOL_NAMES.GET_PROMPT_INFO,
+      "프롬프트 리스트 조회",
       {
-        name: z.string().describe("조회할 prompt의 이름")
+        name: z.string().describe("조회할 prompt의 이름"),
       },
       async (args: { name: string }): Promise<McpToolResponse> => {
         const prompt = this.promptLoader.findPromptByName(args.name);
