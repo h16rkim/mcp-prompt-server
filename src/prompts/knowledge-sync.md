@@ -1,5 +1,7 @@
-## 목표
+## Goal
 
-* `knowledge` tool에 현재 디렉토리를 최신 상태로 등록해 줘. 
-  * 만약 현재 디렉토리가 knowledge로 등록되어 있다면 현재 코드 상태로 갱신해 주고, 없다면 knowledge에 추가해 줘.
-  * 만약 knowledge 등록에 필요한 부가 정보가 있다면, 사용자에게 해당 값을 질문한 후 사용자가 대답한 값으로 수정해 줘
+*	Register the current directory in the knowledge tool with the latest state.
+  *	If the current directory is already registered in knowledge, update it with the current code state; if not, add it to knowledge.
+  *	If the current directory is a Kotlin/Typescript multi-module/monorepo repository, do not register the entire module root in knowledge; instead, register each child module individually.
+  *	If additional information is required for knowledge registration, ask the user for that value and then update it using their response.
+*	Always respond to the user in Korean.
