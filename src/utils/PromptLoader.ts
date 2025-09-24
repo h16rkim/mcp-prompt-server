@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
+import os from 'os';
 import type { PromptTemplate, PromptMessage, PromptArgument } from '../types.js';
 import { FileUtils } from './FileUtils.js';
 import { Logger } from './Logger.js';
@@ -23,15 +24,16 @@ export class PromptLoader {
    */
   async loadPrompts(): Promise<PromptTemplate[]> {
     try {
-      await this.ensurePromptsDirectories();
-      const allPrompts: PromptTemplate[] = [];
+      const resolvedDirs = await this.resolvePromptsDirs();
       
-      for (const promptsDir of this.promptsDirs) {
-        const promptFiles = await this.getPromptFiles(promptsDir);
-        const prompts = await this.parsePromptFiles(promptFiles, promptsDir);
-        allPrompts.push(...prompts);
-      }
+      const promptsArrays = await Promise.all(
+        resolvedDirs.map(async (promptsDir) => {
+          const promptFiles = await this.getPromptFiles(promptsDir);
+          return await this.parsePromptFiles(promptFiles, promptsDir);
+        })
+      );
       
+      const allPrompts = promptsArrays.flat();
       this.loadedPrompts = allPrompts;
       Logger.info(DEFAULT_MESSAGES.PROMPTS_LOADED(allPrompts.length));
       
@@ -64,12 +66,47 @@ export class PromptLoader {
   }
 
   /**
-   * prompts 디렉토리들 존재 확인 및 생성
+   * 원본 경로들을 처리하여 유효한 절대경로 목록 반환
    */
-  private async ensurePromptsDirectories(): Promise<void> {
-    for (const promptsDir of this.promptsDirs) {
-      await fs.ensureDir(promptsDir);
-    }
+  private async resolvePromptsDirs(): Promise<string[]> {
+    const results = await Promise.all(
+      this.promptsDirs.map(async (originalDir) => {
+        const resolvedDir = this.resolvePath(originalDir);
+
+        if(!this.isRelativePath(originalDir)) {
+          // 절대경로/틸트 경로는 디렉토리 생성
+          await fs.ensureDir(resolvedDir);
+
+          return resolvedDir;
+        }
+        
+        const exists = await fs.pathExists(resolvedDir);
+        if (!exists) {
+          return null;
+        }
+
+        return resolvedDir;
+      })
+    );
+    
+    return results.filter((dir): dir is string => dir !== null);
+  }
+
+  /**
+   * 경로 해석 (홈 디렉토리 처리 포함)
+   */
+  private resolvePath(dirPath: string): string {
+    const expandedPath = dirPath.startsWith('~') 
+      ? path.join(os.homedir(), dirPath.slice(1))
+      : dirPath;
+    return path.resolve(expandedPath);
+  }
+
+  /**
+   * 상대경로인지 확인 (원본 경로 기준)
+   */
+  private isRelativePath(dirPath: string): boolean {
+    return !path.isAbsolute(dirPath) && !dirPath.startsWith('~');
   }
 
   /**

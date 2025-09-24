@@ -2,7 +2,6 @@
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import path from 'path';
-import os from 'os';
 import { McpPromptServer } from './server/McpPromptServer.js';
 import { FileUtils } from './utils/FileUtils.js';
 import { Logger } from './utils/Logger.js';
@@ -21,14 +20,7 @@ class Application {
     if (process.env.PROMPTS_DIRS) {
       this.promptsDirs = process.env.PROMPTS_DIRS
         .split(',')
-        .map(dir => {
-          const trimmed = dir.trim();
-          // 홈 디렉토리 처리
-          const expandedPath = trimmed.startsWith('~') 
-            ? path.join(os.homedir(), trimmed.slice(1))
-            : trimmed;
-          return path.resolve(expandedPath);
-        })
+        .map(dir => dir.trim())
         .filter(dir => dir.length > 0);
     } else {
       const currentDir = FileUtils.getCurrentDirectory(import.meta.url);
