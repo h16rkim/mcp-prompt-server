@@ -11,8 +11,7 @@ import {
   HandlebarTemplateProcessStrategy,
   MarkdownTemplateProcessStrategy,
   TemplateProcessStrategy,
-} from "./TemplateProcessStrategy";
-import { MARKDOWN_KEYWORDS } from "../config/constants";
+} from "./TemplateProcessStrategy.js";
 
 /**
  * 템플릿 처리 유틸리티 클래스
