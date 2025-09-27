@@ -11,7 +11,7 @@ messages:
       type: text
       text: |
         ## Use `knowledge` tool to answer the user's question.'
-        
+
         ## User Prompt
-        
+
         {{prompt}}

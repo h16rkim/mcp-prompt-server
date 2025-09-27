@@ -3106,10 +3106,7 @@
       }
     ]
   ],
-  "valid_history_range": [
-    0,
-    65
-  ],
+  "valid_history_range": [0, 65],
   "transcript": [
     "> /editor",
     "MCP 서버를 npm에 publish하고 `npx -y @mipong/mcp-prompt-server` 형식으로 실행할 수 있도록 하려면 다음 작업들이 필요합니다:\n\n## 1. package.json 수정\n\n현재 package.json에 다음 설정들을 추가/수정해야 합니다:\n[Tool uses: fs_read]",
@@ -3226,9 +3223,7 @@
                 }
               },
               "type": "object",
-              "required": [
-                "context7CompatibleLibraryID"
-              ]
+              "required": ["context7CompatibleLibraryID"]
             }
           }
         }
@@ -3239,9 +3234,7 @@
           "description": "Resolves a package/product name to a Context7-compatible library ID and returns a list of matching libraries.\n\nYou MUST call this function before 'get-library-docs' to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nSelection Process:\n1. Analyze the query to understand what library/package the user is looking for\n2. Return the most relevant match based on:\n- Name similarity to the query (exact matches prioritized)\n- Description relevance to the query's intent\n- Documentation coverage (prioritize libraries with higher Code Snippet counts)\n- Trust score (consider libraries with scores of 7-10 more authoritative)\n\nResponse Format:\n- Return the selected library ID in a clearly marked section\n- Provide a brief explanation for why this library was chosen\n- If multiple good matches exist, acknowledge this but proceed with the most relevant one\n- If no good matches exist, clearly state this and suggest query refinements\n\nFor ambiguous queries, request clarification before proceeding with a best-guess match.",
           "input_schema": {
             "json": {
-              "required": [
-                "libraryName"
-              ],
+              "required": ["libraryName"],
               "$schema": "http://json-schema.org/draft-07/schema#",
               "additionalProperties": false,
               "properties": {
@@ -3316,12 +3309,7 @@
                   "description": "List of paths to the images. This is currently supported by the Image mode."
                 },
                 "mode": {
-                  "enum": [
-                    "Line",
-                    "Directory",
-                    "Search",
-                    "Image"
-                  ],
+                  "enum": ["Line", "Directory", "Search", "Image"],
                   "description": "The mode to run in: `Line`, `Directory`, `Search`. `Line` and `Search` are only for text files, and `Directory` is only for directories. `Image` is for image files, in this mode `image_paths` is required.",
                   "type": "string"
                 },
@@ -3334,10 +3322,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "path",
-                "mode"
-              ],
+              "required": ["path", "mode"],
               "type": "object"
             }
           }
@@ -3349,19 +3334,11 @@
           "description": "A tool for creating and editing files\n * The `create` command will override the file at `path` if it already exists as a file, and otherwise create a new file\n * The `append` command will add content to the end of an existing file, automatically adding a newline if the file doesn't end with one. The file must exist.\n Notes for using the `str_replace` command:\n * The `old_str` parameter should match EXACTLY one or more consecutive lines from the original file. Be mindful of whitespaces!\n * If the `old_str` parameter is not unique in the file, the replacement will not be performed. Make sure to include enough context in `old_str` to make it unique\n * The `new_str` parameter should contain the edited lines that should replace the `old_str`.",
           "input_schema": {
             "json": {
-              "required": [
-                "command",
-                "path"
-              ],
+              "required": ["command", "path"],
               "properties": {
                 "command": {
                   "type": "string",
-                  "enum": [
-                    "create",
-                    "str_replace",
-                    "insert",
-                    "append"
-                  ],
+                  "enum": ["create", "str_replace", "insert", "append"],
                   "description": "The commands to run. Allowed options are: `create`, `str_replace`, `insert`, `append`."
                 },
                 "new_str": {
@@ -3396,9 +3373,7 @@
           "description": "Execute the specified bash command.",
           "input_schema": {
             "json": {
-              "required": [
-                "command"
-              ],
+              "required": ["command"],
               "properties": {
                 "command": {
                   "description": "Bash command to execute",
@@ -3446,12 +3421,7 @@
                   "description": "Human readable description of the api that is being called."
                 }
               },
-              "required": [
-                "region",
-                "service_name",
-                "operation_name",
-                "label"
-              ],
+              "required": ["region", "service_name", "operation_name", "label"],
               "type": "object"
             }
           }
@@ -3482,9 +3452,7 @@
                 }
               },
               "type": "object",
-              "required": [
-                "title"
-              ]
+              "required": ["title"]
             }
           }
         }
@@ -3510,9 +3478,7 @@
           "description": "Searches for local businesses and places using Brave's Local Search API. Best for queries related to physical locations, businesses, restaurants, services, etc. Returns detailed information including:\n- Business names and addresses\n- Ratings and review counts\n- Phone numbers and opening hours\nUse this when the query implies 'near me' or mentions specific locations. Automatically falls back to web search if no local results are found.",
           "input_schema": {
             "json": {
-              "required": [
-                "query"
-              ],
+              "required": ["query"],
               "type": "object",
               "properties": {
                 "query": {
@@ -3551,9 +3517,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "query"
-              ],
+              "required": ["query"],
               "type": "object"
             }
           }

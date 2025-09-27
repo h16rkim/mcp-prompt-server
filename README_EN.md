@@ -49,17 +49,17 @@ The server will run on standard input/output and can be connected by Cursor, Win
 You can create new prompt templates by adding new YAML or JSON files in the `src/prompts` directory. Each template file should contain the following:
 
 ```yaml
-name: prompt_name                # Unique identifier for calling this prompt
-description: prompt description  # Description of the prompt's functionality
-arguments:                       # Parameter list (optional)
-  - name: arg_name               # Parameter name
+name: prompt_name # Unique identifier for calling this prompt
+description: prompt description # Description of the prompt's functionality
+arguments: # Parameter list (optional)
+  - name: arg_name # Parameter name
     description: arg description # Parameter description
-    required: true/false         # Whether required
-messages:                        # Prompt message list
-  - role: user/assistant         # Message role
+    required: true/false # Whether required
+messages: # Prompt message list
+  - role: user/assistant # Message role
     content:
-      type: text                 # Content type
-      text: |                    # Text content, can include parameter placeholders {{arg_name}}
+      type: text # Content type
+      text: | # Text content, can include parameter placeholders {{arg_name}}
         Your prompt text here...
 ```
 
@@ -143,9 +143,7 @@ In Windsurf, access the MCP configuration through:
   "mcpServers": {
     "prompt-server": {
       "command": "node",
-      "args": [
-        "/path/to/prompt-server/src/index.js"
-      ],
+      "args": ["/path/to/prompt-server/src/index.js"],
       "transport": "stdio"
     }
   }

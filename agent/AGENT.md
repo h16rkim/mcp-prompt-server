@@ -5,6 +5,7 @@ This file provides guidance to AI assistants (Claude Code, Cursor, Windsurf, etc
 ## File Naming Conventions
 
 ### Class Files
+
 - **Use PascalCase** for files containing classes
 - Examples:
   - `McpPromptServer.ts` - Contains McpPromptServer class
@@ -14,6 +15,7 @@ This file provides guidance to AI assistants (Claude Code, Cursor, Windsurf, etc
   - `ParseStrategies.ts` - Contains ParseStrategy classes
 
 ### Non-Class Files
+
 - **Use camelCase** for utility files, configuration files, and other non-class files
 - Examples:
   - `fileUtils.ts` - Utility functions
@@ -23,17 +25,19 @@ This file provides guidance to AI assistants (Claude Code, Cursor, Windsurf, etc
   - `types.ts` - Type definitions
 
 ### Import Path Guidelines
+
 - Always use the correct casing in import statements
 - Example:
   ```typescript
-  import { PromptLoader } from '../utils/PromptLoader.js';
-  import { TemplateProcessor } from '../utils/TemplateProcessor.js';
-  import { fileUtils } from '../utils/fileUtils.js';
+  import { PromptLoader } from "../utils/PromptLoader.js";
+  import { TemplateProcessor } from "../utils/TemplateProcessor.js";
+  import { fileUtils } from "../utils/fileUtils.js";
   ```
 
 ## Development Commands
 
 ### Building and Running
+
 - `npm run build` - Compile TypeScript to JavaScript in dist/
 - `npm run clean` - Remove compiled output directory
 - `npm start` - Run the compiled server from dist/
@@ -41,9 +45,11 @@ This file provides guidance to AI assistants (Claude Code, Cursor, Windsurf, etc
 - `npm run postbuild` - Copy prompt files to dist/ (runs automatically after build)
 
 ### Dependencies
+
 - `npm install` - Install all dependencies
 
 ### Environment Configuration
+
 - `PROMPTS_DIR` - Optional environment variable to specify custom prompts directory
   - If set: Uses the specified directory path for prompt templates
   - If not set: Uses default `src/prompts/` directory
@@ -89,12 +95,13 @@ The server follows a modular TypeScript architecture:
 ### Prompt Template Structure
 
 Templates in `src/prompts/` follow this structure:
+
 ```yaml
 name: unique_identifier
 description: Korean description
 arguments:
   - name: param_name
-    description: Korean description  
+    description: Korean description
     required: true/false
 messages:
   - role: user

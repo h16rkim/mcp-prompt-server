@@ -2,9 +2,7 @@
   "mcpServers": {
     "prompts": {
       "command": "node",
-      "args": [
-        "$PATH_TO_REPOSITORY/dist/index.js"
-      ],
+      "args": ["$PATH_TO_REPOSITORY/dist/index.js"],
       "env": {
         "PROMPTS_DIR": "$PATH_TO_REPOSITORY/src/prompts"
       },
@@ -12,10 +10,7 @@
     },
     "prompts": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@h16rkim/mcp-prompt-server@latest"
-      ],
+      "args": ["-y", "@h16rkim/mcp-prompt-server@latest"],
       "env": {
         "PROMPTS_DIR": "$PATH_TO_REPOSITORY/src/prompts"
       },

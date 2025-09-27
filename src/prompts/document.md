@@ -33,31 +33,38 @@ For each architectural component you identify, you must use the following detail
 <template_for_component>
 
 [Component Name] (e.g., Service, Controller)
+
 1. Role and Responsibilities
-<role>
-<!-- Describe the component's single, core purpose from the system's perspective. Be clear and concise. -->
-</role>
+   <role>
+   <!-- Describe the component's single, core purpose from the system's perspective. Be clear and concise. -->
+   </role>
 
 2. Naming Conventions
 
 <naming_conventions>
 <file_convention>
+
 <!-- Specify the file naming rule based on the codebase (e.g., `*.service.ts`, `user.controller.ts`). -->
+
 </file_convention>
 <other_conventions>
+
 <!-- Detail the naming rules for internal elements like classes, interfaces, functions, methods, and variables. -->
+
 </other_conventions>
 </naming_conventions>
 
 3. Core Dependencies & Cross-Cutting Concerns
-<dependencies>
-<core_dependencies>
-<!-- List the other core components this component MUST depend on (e.g., "The Service depends on the Repository and Domain Objects."). -->
-</core_dependencies>
-<cross_cutting_concerns>
-<!-- List common services used across the component (e.g., `LoggingService`, `ErrorHandling`). -->
-</cross_cutting_concerns>
-</dependencies>
+   <dependencies>
+   <core_dependencies>
+   <!-- List the other core components this component MUST depend on (e.g., "The Service depends on the Repository and Domain Objects."). -->
+
+   </core_dependencies>
+   <cross_cutting_concerns>
+   <!-- List common services used across the component (e.g., `LoggingService`, `ErrorHandling`). -->
+
+   </cross_cutting_concerns>
+   </dependencies>
 
 4. Detailed Implementation Guides
 
@@ -85,7 +92,6 @@ For each architectural component you identify, you must use the following detail
 
 <!-- Add more guides as needed based on all core responsibilities identified from the codebase analysis. -->
 
-
 </implementation_guides>
 
 </template_for_component>
@@ -98,22 +104,34 @@ This section documents the project's testing philosophy and component-specific t
 
 <global_testing_principles>
 <testing_philosophy>
+
 <!-- Clearly define the purpose of testing in this project (e.g., "To guarantee functional correctness, enable rapid and safe refactoring, and serve as living documentation for business rules."). -->
+
 </testing_philosophy>
 <tools_and_libraries>
+
 <!-- List all testing-related tools identified from your analysis (e.g., Test runners like `Jest` or `Vitest`, utilities like `@testing-library/react`, mocking libraries like `msw` or `jest-mock`). -->
+
 </tools_and_libraries>
 <file_structure_and_naming>
+
 <!-- Describe the location and naming convention for test files (e.g., "Test files are co-located with source files using the `*.test.ts` or `*.spec.ts` suffix. The `__tests__` folder is not used."). -->
+
 </file_structure_and_naming>
 <core_test_structure>
+
 <!-- Define mandatory structural patterns for tests (e.g., "All tests must follow the 'Arrange-Act-Assert' (AAA) pattern. Use 'Given-When-Then' comments to improve test readability."). -->
+
 </core_test_structure>
 <global_mocking_strategy>
+
 <!-- Define system boundaries and what should be mocked (e.g., "In unit tests, we mock all dependencies external to the System Under Test (SUT). This always includes database access (Repositories), external API calls (Clients), current time, and file system interactions."). -->
+
 </global_mocking_strategy>
 <test_data_management>
+
 <!-- Explain how test data is created and managed (e.g., "We use the Factory or Builder pattern for test data creation. Common data is managed in a `fixtures` folder."). -->
+
 </test_data_management>
 </global_testing_principles>
 
@@ -129,13 +147,11 @@ Testing [Component Name]
 
 <!-- State what you are ultimately trying to verify with this component's tests (e.g., "The primary goal of Service tests is to verify the correctness of its business logic and ensure it returns the right result or throws the correct exception based on its input."). -->
 
-
 </primary_test_goal>
 
 <standard_mocks>
 
 <!-- List the dependencies that are typically mocked for this component's unit tests (e.g., "When testing a Service, its dependent `Repository` and other `Services` are always mocked."). -->
-
 
 </standard_mocks>
 
@@ -160,7 +176,8 @@ Generated code
 // Act (When): Call the method under test...
 
     // Assert (Then): Make assertions...
-  });
+
+});
 </test_code_example>
 
 </scenario>
@@ -179,8 +196,8 @@ it('should throw a DuplicateEmailException when the email already exists', async
 
 Generated code
 // Act & Assert (When & Then)
-    await expect(service.createUser(...)).rejects.toThrow(DuplicateEmailException);
-  });
+await expect(service.createUser(...)).rejects.toThrow(DuplicateEmailException);
+});
 </test_code_example>
 IGNORE_WHEN_COPYING_START
 content_copy
@@ -203,7 +220,6 @@ This scenario tests that the system behaves gracefully when given atypical bound
 
 <!-- Add more scenarios as needed to cover all critical test cases identified from the codebase. -->
 
-
 </test_scenarios>
 </template_for_component_test>
 
@@ -215,4 +231,3 @@ This scenario tests that the system behaves gracefully when given atypical bound
 </rules>
 
 ## Now, let's start the analysis.
-

@@ -42,29 +42,35 @@ npm start
 ## 지원하는 파일 형식
 
 ### YAML/JSON 파일
+
 기존의 구조화된 prompt 템플릿 형식으로, 매개변수와 복잡한 설정을 지원합니다.
 
 ### Markdown 파일 (NEW!)
+
 간단하고 직관적인 Markdown 형식으로 prompt를 작성할 수 있습니다.
 
 **Markdown 파일 규칙:**
+
 - **name**: 파일명 (확장자 제외)
 - **description**: 첫 번째 문장을 자동 추출 (Markdown 형식 제거)
 - **arguments**: 항상 빈 배열 (매개변수 없음)
 - **messages**: 전체 내용이 user role의 단일 메시지로 변환
 
 **예시:**
+
 ```markdown
 # 코드 리뷰 도우미
 
 이 프롬프트는 코드 리뷰를 도와줍니다.
 
 ## 주요 기능
+
 - 코드 품질 검토
 - 개선 사항 제안
 ```
 
 위 파일은 다음과 같이 변환됩니다:
+
 - name: "코드리뷰도우미" (파일명 기준)
 - description: "이 프롬프트는 코드 리뷰를 도와줍니다"
 - 전체 Markdown 내용이 메시지로 사용
@@ -161,12 +167,14 @@ PROMPTS_DIR="/path/to/custom/prompts" npx @h16rkim/mcp-prompt-server
 ```
 
 **PROMPTS_DIR 설정 시 주의사항:**
+
 - 지정된 디렉토리에 있는 모든 `.yaml`, `.json`, `.md` 파일을 프롬프트 템플릿으로 인식합니다
 - 파일 형식은 본 문서의 "지원하는 파일 형식" 섹션을 참고하세요
 - 디렉토리가 존재하지 않으면 자동으로 생성됩니다
 - 서버 실행 중에도 `reload_prompts` 도구를 사용하여 변경사항을 반영할 수 있습니다
 
 이 기능을 통해:
+
 - 여러 프로젝트별로 다른 prompt 템플릿 세트 사용 가능
 - 팀 공유 prompt 템플릿 디렉토리 활용 가능
 - 개인 맞춤형 prompt 템플릿 관리 가능
@@ -270,6 +278,7 @@ npm run dev:debug
 ```
 
 **주의사항:**
+
 - 디버그 로그는 `stderr`로 출력되어 MCP의 JSON-RPC 통신(`stdout`)과 분리됩니다
 - 프로덕션 환경에서는 `DEBUG=false` 또는 환경변수를 설정하지 않는 것을 권장합니다
 
@@ -280,19 +289,18 @@ npm run dev:debug
 ### 기본 문법
 
 ```handlebars
-# 변수 치환
-안녕하세요 {{name}}님!
-
-# 조건부 표시
+# 변수 치환 안녕하세요
+{{name}}님! # 조건부 표시
 {{#if format}}
-선택된 형식: {{format}}
+  선택된 형식:
+  {{format}}
 {{else}}
-기본 형식을 사용합니다.
+  기본 형식을 사용합니다.
 {{/if}}
 
 # 부정 조건
 {{#unless disabled}}
-이 기능은 활성화되어 있습니다.
+  이 기능은 활성화되어 있습니다.
 {{/unless}}
 ```
 
@@ -301,84 +309,98 @@ npm run dev:debug
 서버에서 제공하는 추가 helper 함수들:
 
 #### eq (equals)
+
 두 값이 같은지 비교합니다.
+
 ```handlebars
 {{#if (eq format "yaml")}}
-YAML 형식입니다.
+  YAML 형식입니다.
 {{else}}
-다른 형식입니다.
+  다른 형식입니다.
 {{/if}}
 ```
 
 #### eqIgnoreCase (equals ignore case)
+
 두 값이 같은지 대소문자를 무시하고 비교합니다.
+
 ```handlebars
 {{#if (eqIgnoreCase format "YAML")}}
-YAML 형식입니다 (대소문자 무시).
+  YAML 형식입니다 (대소문자 무시).
 {{/if}}
 ```
 
 #### neq (not equals)
+
 두 값이 다른지 비교합니다.
+
 ```handlebars
 {{#if (neq status "completed")}}
-아직 완료되지 않았습니다.
+  아직 완료되지 않았습니다.
 {{/if}}
 ```
 
 #### in (includes)
+
 값이 배열에 포함되어 있는지 확인합니다.
+
 ```handlebars
 {{#if (in language ["javascript", "typescript"])}}
-JavaScript 계열 언어입니다.
+  JavaScript 계열 언어입니다.
 {{/if}}
 ```
 
 #### inIgnoreCase (includes ignore case)
+
 값이 배열에 포함되어 있는지 대소문자를 무시하고 확인합니다.
+
 ```handlebars
 {{#inIgnoreCase format '["yaml", "yml"]'}}
-YAML 계열 형식입니다.
+  YAML 계열 형식입니다.
 {{/inIgnoreCase}}
 ```
 
 #### startsWith
+
 문자열이 특정 문자열로 시작하는지 확인합니다.
+
 ```handlebars
 {{#if (startsWith filename "test_")}}
-테스트 파일입니다.
+  테스트 파일입니다.
 {{/if}}
 ```
 
 #### raw
+
 Handlebars 문법을 문자 그대로 출력하고 싶을 때 사용합니다.
+
 ```handlebars
-{{{{raw}}}}
-이 안의 {{변수}}는 처리되지 않고 그대로 출력됩니다.
-{{{{/raw}}}}
+{{#raw}}
+  이 안의 \{{변수}}는 처리되지 않고 그대로 출력됩니다.
+{{/raw}}
 ```
 
 ### 템플릿 예시
 
 ```handlebars
-# {{title}} 프롬프트
+#
+{{title}}
+프롬프트
 
 {{description}}
 
 {{#if (eq format "yaml")}}
-## YAML 형식 가이드라인
-YAML 구조를 따라 작성해주세요.
+  ## YAML 형식 가이드라인 YAML 구조를 따라 작성해주세요.
 {{/if}}
 
 {{#if (eq format "json")}}
-## JSON 형식 가이드라인
-JSON 구조를 따라 작성해주세요.
+  ## JSON 형식 가이드라인 JSON 구조를 따라 작성해주세요.
 {{/if}}
 
 {{#if (neq format "markdown")}}
-구조화된 형식을 사용합니다.
+  구조화된 형식을 사용합니다.
 {{else}}
-Markdown 형식을 사용합니다.
+  Markdown 형식을 사용합니다.
 {{/if}}
 ```
 
@@ -387,17 +409,17 @@ Markdown 형식을 사용합니다.
 `src/prompts` 디렉토리에 새로운 YAML 또는 JSON 파일을 추가하여 새로운 prompt 템플릿을 생성할 수 있습니다. 각 템플릿 파일은 다음 내용을 포함해야 합니다:
 
 ```yaml
-name: prompt_name                # 고유 식별자, 이 prompt 호출에 사용
-description: prompt description  # prompt 기능에 대한 설명
-arguments:                       # 매개변수 목록 (선택사항)
-  - name: arg_name               # 매개변수 이름
+name: prompt_name # 고유 식별자, 이 prompt 호출에 사용
+description: prompt description # prompt 기능에 대한 설명
+arguments: # 매개변수 목록 (선택사항)
+  - name: arg_name # 매개변수 이름
     description: arg description # 매개변수 설명
-    required: true/false         # 필수 여부
-messages:                        # prompt 메시지 목록
-  - role: user/assistant         # 메시지 역할
+    required: true/false # 필수 여부
+messages: # prompt 메시지 목록
+  - role: user/assistant # 메시지 역할
     content:
-      type: text                 # 콘텐츠 타입
-      text: |                    # 텍스트 내용, 매개변수 플레이스홀더 {{arg_name}} 포함 가능
+      type: text # 콘텐츠 타입
+      text: | # 텍스트 내용, 매개변수 플레이스홀더 {{arg_name}} 포함 가능
         Your prompt text here...
 ```
 
@@ -406,6 +428,7 @@ messages:                        # prompt 메시지 목록
 YAML 템플릿에서는 `arguments` 섹션에 정의된 매개변수를 Handlebars 문법으로 템플릿 내에서 사용할 수 있습니다:
 
 #### 기본 매개변수 사용
+
 ```yaml
 arguments:
   - name: format
@@ -427,6 +450,7 @@ messages:
 ```
 
 #### 조건부 로직과 함께 사용
+
 ```yaml
 arguments:
   - name: format
@@ -445,13 +469,14 @@ messages:
         {{else}}
         Markdown 형식으로 출력합니다.
         {{/if}}
-        
+
         {{#inIgnoreCase format '["yaml", "yml"]'}}
         YAML 계열 형식을 사용합니다.
         {{/inIgnoreCase}}
 ```
 
 #### 복잡한 조건부 로직 예시
+
 ```yaml
 arguments:
   - name: type
@@ -471,11 +496,11 @@ messages:
         {{else}}
         일반 작업을 수행합니다: {{type}}
         {{/if}}
-        
+
         {{#if options}}
         추가 옵션: {{options}}
         {{/if}}
-        
+
         {{#unless options}}
         기본 설정을 사용합니다.
         {{/unless}}
@@ -589,9 +614,7 @@ Windsurf에서 다음 방법으로 MCP 설정에 접근합니다:
   "mcpServers": {
     "prompt-server": {
       "command": "node",
-      "args": [
-        "/path/to/prompt-server/dist/index.js"
-      ],
+      "args": ["/path/to/prompt-server/dist/index.js"],
       "transport": "stdio"
     }
   }

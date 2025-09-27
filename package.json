@@ -22,7 +22,8 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "prepublishOnly": "npm run build",
-    "test:prompt": "node scripts/e2e-test.js --prompt"
+    "test:prompt": "node scripts/e2e-test.js --prompt",
+    "format": "prettier --write \"**/*.ts\""
   },
   "keywords": [
     "mcp",
@@ -55,6 +56,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.11.0",
     "nodemon": "^3.0.3",
+    "prettier": "^3.6.2",
     "rimraf": "^5.0.5",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3"

@@ -1,11 +1,15 @@
-import fs from 'fs-extra';
-import path from 'path';
-import os from 'os';
-import type { PromptTemplate, PromptMessage, PromptArgument } from '../types.js';
-import { FileUtils } from './FileUtils.js';
-import { Logger } from './Logger.js';
-import { DEFAULT_MESSAGES, ERROR_MESSAGES } from '../config/constants.js';
-import { ParseStrategyFactory } from './ParseStrategies.js';
+import fs from "fs-extra";
+import path from "path";
+import os from "os";
+import type {
+  PromptTemplate,
+  PromptMessage,
+  PromptArgument,
+} from "../types.js";
+import { FileUtils } from "./FileUtils.js";
+import { Logger } from "./Logger.js";
+import { DEFAULT_MESSAGES, ERROR_MESSAGES } from "../config/constants.js";
+import { ParseStrategyFactory } from "./ParseStrategies.js";
 
 /**
  * Prompt 로더 클래스
@@ -25,18 +29,18 @@ export class PromptLoader {
   async loadPrompts(): Promise<PromptTemplate[]> {
     try {
       const resolvedDirs = await this.resolvePromptsDirs();
-      
+
       const promptsArrays = await Promise.all(
         resolvedDirs.map(async (promptsDir) => {
           const promptFiles = await this.getPromptFiles(promptsDir);
           return await this.parsePromptFiles(promptFiles, promptsDir);
-        })
+        }),
       );
-      
+
       const allPrompts = promptsArrays.flat();
       this.loadedPrompts = allPrompts;
       Logger.info(DEFAULT_MESSAGES.PROMPTS_LOADED(allPrompts.length));
-      
+
       return allPrompts;
     } catch (error) {
       Logger.error(ERROR_MESSAGES.PROMPTS_LOAD_FAILED, error);
@@ -55,14 +59,14 @@ export class PromptLoader {
    * 특정 이름의 prompt 찾기
    */
   findPromptByName(name: string): PromptTemplate | undefined {
-    return this.loadedPrompts.find(prompt => prompt.name === name);
+    return this.loadedPrompts.find((prompt) => prompt.name === name);
   }
 
   /**
    * 모든 prompt 이름 반환
    */
   getPromptNames(): string[] {
-    return this.loadedPrompts.map(prompt => prompt.name);
+    return this.loadedPrompts.map((prompt) => prompt.name);
   }
 
   /**
@@ -73,22 +77,22 @@ export class PromptLoader {
       this.promptsDirs.map(async (originalDir) => {
         const resolvedDir = this.resolvePath(originalDir);
 
-        if(!this.isRelativePath(originalDir)) {
+        if (!this.isRelativePath(originalDir)) {
           // 절대경로/틸트 경로는 디렉토리 생성
           await fs.ensureDir(resolvedDir);
 
           return resolvedDir;
         }
-        
+
         const exists = await fs.pathExists(resolvedDir);
         if (!exists) {
           return null;
         }
 
         return resolvedDir;
-      })
+      }),
     );
-    
+
     return results.filter((dir): dir is string => dir !== null);
   }
 
@@ -96,7 +100,7 @@ export class PromptLoader {
    * 경로 해석 (홈 디렉토리 처리 포함)
    */
   private resolvePath(dirPath: string): string {
-    const expandedPath = dirPath.startsWith('~') 
+    const expandedPath = dirPath.startsWith("~")
       ? path.join(os.homedir(), dirPath.slice(1))
       : dirPath;
     return path.resolve(expandedPath);
@@ -106,7 +110,7 @@ export class PromptLoader {
    * 상대경로인지 확인 (원본 경로 기준)
    */
   private isRelativePath(dirPath: string): boolean {
-    return !path.isAbsolute(dirPath) && !dirPath.startsWith('~');
+    return !path.isAbsolute(dirPath) && !dirPath.startsWith("~");
   }
 
   /**
@@ -120,25 +124,35 @@ export class PromptLoader {
   /**
    * prompt 파일들을 파싱하여 PromptTemplate 배열로 변환
    */
-  private async parsePromptFiles(promptFiles: string[], promptsDir: string): Promise<PromptTemplate[]> {
-    const results = await Promise.all(promptFiles.map(async (file) => {
-      try {
-        return await this.parsePromptFile(file, promptsDir);
-      } catch (error) {
-        Logger.warn(`파일 ${file} 파싱 중 오류: ${error}`);
-        return null;
-      }
-    }));
-    return results.filter((prompt): prompt is PromptTemplate => prompt !== null);
+  private async parsePromptFiles(
+    promptFiles: string[],
+    promptsDir: string,
+  ): Promise<PromptTemplate[]> {
+    const results = await Promise.all(
+      promptFiles.map(async (file) => {
+        try {
+          return await this.parsePromptFile(file, promptsDir);
+        } catch (error) {
+          Logger.warn(`파일 ${file} 파싱 중 오류: ${error}`);
+          return null;
+        }
+      }),
+    );
+    return results.filter(
+      (prompt): prompt is PromptTemplate => prompt !== null,
+    );
   }
 
   /**
    * 개별 prompt 파일 파싱
    */
-  private async parsePromptFile(filename: string, promptsDir: string): Promise<PromptTemplate | null> {
+  private async parsePromptFile(
+    filename: string,
+    promptsDir: string,
+  ): Promise<PromptTemplate | null> {
     const filePath = path.join(promptsDir, filename);
-    const content = await fs.readFile(filePath, 'utf8');
-    
+    const content = await fs.readFile(filePath, "utf8");
+
     // Strategy Pattern을 사용하여 파일 파싱
     const parseStrategy = ParseStrategyFactory.getStrategy(filename);
     if (!parseStrategy) {
@@ -183,7 +197,7 @@ export class PromptLoader {
    */
   private isValidMessages(messages: unknown): messages is PromptMessage[] {
     if (!Array.isArray(messages)) return false;
-    return messages.every(message => this.isValidPromptMessage(message));
+    return messages.every((message) => this.isValidPromptMessage(message));
   }
 
   /**
@@ -193,12 +207,12 @@ export class PromptLoader {
     if (!this.isObject(obj)) return false;
 
     const message = obj as Record<string, unknown>;
-    const validRoles = ['user', 'assistant', 'system'];
+    const validRoles = ["user", "assistant", "system"];
 
     return (
       validRoles.includes(message.role as string) &&
       this.isObject(message.content) &&
-      (message.content as any).type === 'text' &&
+      (message.content as any).type === "text" &&
       this.isValidString((message.content as any).text)
     );
   }
@@ -206,10 +220,12 @@ export class PromptLoader {
   /**
    * 인수 배열 유효성 검사
    */
-  private isValidArguments(args: unknown): args is PromptArgument[] | undefined {
+  private isValidArguments(
+    args: unknown,
+  ): args is PromptArgument[] | undefined {
     if (args === undefined) return true;
     if (!Array.isArray(args)) return false;
-    return args.every(arg => this.isValidPromptArgument(arg));
+    return args.every((arg) => this.isValidPromptArgument(arg));
   }
 
   /**
@@ -222,7 +238,7 @@ export class PromptLoader {
     return (
       this.isValidString(arg.name) &&
       this.isValidString(arg.description) &&
-      typeof arg.required === 'boolean'
+      typeof arg.required === "boolean"
     );
   }
 
@@ -230,13 +246,13 @@ export class PromptLoader {
    * 객체 타입 검사
    */
   private isObject(value: unknown): value is Record<string, unknown> {
-    return typeof value === 'object' && value !== null;
+    return typeof value === "object" && value !== null;
   }
 
   /**
    * 유효한 문자열 검사
    */
   private isValidString(value: unknown): value is string {
-    return typeof value === 'string' && value.trim() !== '';
+    return typeof value === "string" && value.trim() !== "";
   }
 }

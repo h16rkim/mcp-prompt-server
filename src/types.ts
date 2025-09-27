@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * 기본 타입 정의
  */
-export type MessageRole = 'user' | 'assistant' | 'system';
-export type McpMessageRole = 'user' | 'assistant';
+export type MessageRole = "user" | "assistant" | "system";
+export type McpMessageRole = "user" | "assistant";
 export type ArgumentsType = Record<string, unknown>;
 export type ZodArgumentsSchema = Record<string, z.ZodType<any>> | undefined;
 
@@ -21,7 +21,7 @@ export interface PromptArgument {
  * Prompt 메시지 내용 정의
  */
 export interface PromptMessageContent {
-  readonly type: 'text';
+  readonly type: "text";
   readonly text: string;
 }
 
@@ -51,7 +51,7 @@ export interface McpResponseMessage {
   role: McpMessageRole;
   content: {
     [x: string]: unknown;
-    type: 'text';
+    type: "text";
     text: string;
   };
 }
@@ -73,7 +73,7 @@ export interface McpToolResponse {
   [x: string]: unknown;
   content: Array<{
     [x: string]: unknown;
-    type: 'text';
+    type: "text";
     text: string;
   }>;
   _meta?: { [x: string]: unknown } | undefined;

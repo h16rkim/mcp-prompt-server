@@ -1,22 +1,22 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { z } from 'zod';
-import type { 
-  PromptTemplate, 
-  McpToolResponse, 
-  ArgumentsType, 
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from "zod";
+import type {
+  PromptTemplate,
+  McpToolResponse,
+  ArgumentsType,
   ZodArgumentsSchema,
-  PromptInfo
-} from '../types.js';
-import { PromptLoader } from '../utils/PromptLoader.js';
-import { TemplateProcessor } from '../utils/TemplateProcessor.js';
-import { Logger } from '../utils/Logger.js';
-import { 
-  SERVER_CONFIG, 
-  DEFAULT_MESSAGES, 
-  ERROR_MESSAGES, 
-  TOOL_NAMES, 
-  TOOL_DESCRIPTIONS 
-} from '../config/constants.js';
+  PromptInfo,
+} from "../types.js";
+import { PromptLoader } from "../utils/PromptLoader.js";
+import { TemplateProcessor } from "../utils/TemplateProcessor.js";
+import { Logger } from "../utils/Logger.js";
+import {
+  SERVER_CONFIG,
+  DEFAULT_MESSAGES,
+  ERROR_MESSAGES,
+  TOOL_NAMES,
+  TOOL_DESCRIPTIONS,
+} from "../config/constants.js";
 
 /**
  * MCP Prompt 서버 클래스
@@ -36,7 +36,7 @@ export class McpPromptServer {
    */
   async initialize(): Promise<void> {
     Logger.info(DEFAULT_MESSAGES.SERVER_STARTING);
-    
+
     await this.promptLoader.loadPrompts();
     this.registerPrompts();
     this.registerManagementTools();
@@ -61,7 +61,7 @@ export class McpPromptServer {
    */
   private registerPrompts(): void {
     const prompts = [...this.promptLoader.getLoadedPrompts()];
-    
+
     for (const prompt of prompts) {
       this.registerSinglePrompt(prompt);
     }
@@ -74,7 +74,7 @@ export class McpPromptServer {
    */
   private registerSinglePrompt(prompt: PromptTemplate): void {
     const argumentsSchema = this.createArgumentsSchema(prompt);
-    
+
     if (argumentsSchema) {
       this.registerPromptWithArguments(prompt, argumentsSchema);
     } else {
@@ -86,8 +86,8 @@ export class McpPromptServer {
    * 인수가 있는 prompt 등록
    */
   private registerPromptWithArguments(
-    prompt: PromptTemplate, 
-    argumentsSchema: ZodArgumentsSchema
+    prompt: PromptTemplate,
+    argumentsSchema: ZodArgumentsSchema,
   ): void {
     this.server.prompt(
       prompt.name,
@@ -95,7 +95,7 @@ export class McpPromptServer {
       argumentsSchema ?? {},
       async (args: ArgumentsType) => {
         return this.processPromptWithValidation(prompt, args || {});
-      }
+      },
     );
   }
 
@@ -103,27 +103,26 @@ export class McpPromptServer {
    * 인수가 없는 prompt 등록
    */
   private registerPromptWithoutArguments(prompt: PromptTemplate): void {
-    this.server.prompt(
-      prompt.name,
-      prompt.description,
-      async () => {
-        return TemplateProcessor.processPromptTemplate(prompt, {});
-      }
-    );
+    this.server.prompt(prompt.name, prompt.description, async () => {
+      return TemplateProcessor.processPromptTemplate(prompt, {});
+    });
   }
 
   /**
    * 검증과 함께 prompt 처리
    */
   private processPromptWithValidation(
-    prompt: PromptTemplate, 
-    args: ArgumentsType
+    prompt: PromptTemplate,
+    args: ArgumentsType,
   ) {
     const validation = TemplateProcessor.validateTemplate(prompt, args || {});
-    
+
     if (!validation.isValid) {
       throw new Error(
-        ERROR_MESSAGES.TEMPLATE_PROCESSING_ERROR([...validation.errors], [...validation.missingArgs])
+        ERROR_MESSAGES.TEMPLATE_PROCESSING_ERROR(
+          [...validation.errors],
+          [...validation.missingArgs],
+        ),
       );
     }
 
@@ -134,18 +133,18 @@ export class McpPromptServer {
    * Prompt 인수를 기반으로 Zod 스키마 생성
    */
   private createArgumentsSchema(prompt: PromptTemplate): ZodArgumentsSchema {
-    const isNoArguments = !prompt.arguments || prompt.arguments?.length === 0
+    const isNoArguments = !prompt.arguments || prompt.arguments?.length === 0;
     if (isNoArguments) {
       return undefined;
     }
 
     const schema: Record<string, z.ZodType<any>> = {};
-    
+
     for (const arg of prompt.arguments) {
       const baseSchema = z.string();
       schema[arg.name] = arg.required ? baseSchema : baseSchema.optional();
     }
-    
+
     return schema;
   }
 
@@ -156,7 +155,7 @@ export class McpPromptServer {
     this.registerReloadPromptsTools();
     this.registerGetPromptNamesTools();
     this.registerGetPromptInfoTools();
-    
+
     Logger.info(DEFAULT_MESSAGES.MANAGEMENT_TOOLS_REGISTERED);
   }
 
@@ -171,14 +170,19 @@ export class McpPromptServer {
         try {
           await this.promptLoader.loadPrompts();
           this.registerPrompts();
-          
+
           const count = this.promptLoader.getLoadedPrompts().length;
-          return this.createSuccessResponse(DEFAULT_MESSAGES.PROMPTS_RELOADED(count));
+          return this.createSuccessResponse(
+            DEFAULT_MESSAGES.PROMPTS_RELOADED(count),
+          );
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          return this.createErrorResponse(ERROR_MESSAGES.PROMPTS_RELOAD_FAILED(errorMessage));
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          return this.createErrorResponse(
+            ERROR_MESSAGES.PROMPTS_RELOAD_FAILED(errorMessage),
+          );
         }
-      }
+      },
     );
   }
 
@@ -191,9 +195,12 @@ export class McpPromptServer {
       TOOL_DESCRIPTIONS.GET_PROMPT_NAMES,
       async (): Promise<McpToolResponse> => {
         const promptNames = [...this.promptLoader.getPromptNames()];
-        const message = DEFAULT_MESSAGES.AVAILABLE_PROMPTS(promptNames.length, promptNames);
+        const message = DEFAULT_MESSAGES.AVAILABLE_PROMPTS(
+          promptNames.length,
+          promptNames,
+        );
         return this.createSuccessResponse(message);
-      }
+      },
     );
   }
 
@@ -209,16 +216,18 @@ export class McpPromptServer {
       },
       async (args: { name: string }): Promise<McpToolResponse> => {
         const prompt = this.promptLoader.findPromptByName(args.name);
-        
+
         if (!prompt) {
-          return this.createErrorResponse(ERROR_MESSAGES.PROMPT_NOT_FOUND(args.name));
+          return this.createErrorResponse(
+            ERROR_MESSAGES.PROMPT_NOT_FOUND(args.name),
+          );
         }
 
         const promptInfo = this.createPromptInfo(prompt);
         const infoText = this.formatPromptInfo(promptInfo);
-        
+
         return this.createSuccessResponse(infoText);
-      }
+      },
     );
   }
 
@@ -231,7 +240,7 @@ export class McpPromptServer {
       description: prompt.description,
       argumentCount: prompt.arguments?.length || 0,
       messageCount: prompt.messages.length,
-      arguments: prompt.arguments ? [...prompt.arguments] : undefined
+      arguments: prompt.arguments ? [...prompt.arguments] : undefined,
     };
   }
 
@@ -243,18 +252,18 @@ export class McpPromptServer {
       `이름: ${info.name}`,
       `설명: ${info.description}`,
       `인수 개수: ${info.argumentCount}`,
-      `메시지 개수: ${info.messageCount}`
+      `메시지 개수: ${info.messageCount}`,
     ];
 
     if (info.arguments && info.arguments.length > 0) {
-      lines.push('\n인수 목록:');
+      lines.push("\n인수 목록:");
       for (const arg of info.arguments) {
-        const requiredText = arg.required ? '필수' : '선택';
+        const requiredText = arg.required ? "필수" : "선택";
         lines.push(`  - ${arg.name}: ${arg.description} (${requiredText})`);
       }
     }
 
-    return lines.join('\n');
+    return lines.join("\n");
   }
 
   /**
@@ -262,7 +271,7 @@ export class McpPromptServer {
    */
   private createSuccessResponse(text: string): McpToolResponse {
     return {
-      content: [{ type: "text", text }]
+      content: [{ type: "text", text }],
     };
   }
 
@@ -272,7 +281,7 @@ export class McpPromptServer {
   private createErrorResponse(text: string): McpToolResponse {
     return {
       content: [{ type: "text", text }],
-      isError: true
+      isError: true,
     };
   }
 }

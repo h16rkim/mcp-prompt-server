@@ -1,7 +1,7 @@
-import YAML from 'yaml';
-import { MarkdownUtils } from './MarkdownUtils.js';
-import { MARKDOWN_KEYWORDS } from '../config/constants.js';
-import type { PromptTemplate } from '../types.js';
+import YAML from "yaml";
+import { MarkdownUtils } from "./MarkdownUtils.js";
+import { MARKDOWN_KEYWORDS } from "../config/constants.js";
+import type { PromptTemplate } from "../types.js";
 
 /**
  * 파일 파싱 전략 인터페이스
@@ -30,7 +30,7 @@ export class JsonParseStrategy implements ParseStrategy {
   }
 
   getSupportedExtensions(): readonly string[] {
-    return ['.json'];
+    return [".json"];
   }
 }
 
@@ -43,7 +43,7 @@ export class YamlParseStrategy implements ParseStrategy {
   }
 
   getSupportedExtensions(): readonly string[] {
-    return ['.yaml', '.yml'];
+    return [".yaml", ".yml"];
   }
 }
 
@@ -53,7 +53,7 @@ export class YamlParseStrategy implements ParseStrategy {
 export class MarkdownParseStrategy implements ParseStrategy {
   parse(content: string, filename?: string): unknown {
     if (!filename) {
-      throw new Error('Markdown 파싱에는 파일명이 필요합니다.');
+      throw new Error("Markdown 파싱에는 파일명이 필요합니다.");
     }
 
     const name = MarkdownUtils.extractNameFromFilename(filename);
@@ -62,13 +62,15 @@ export class MarkdownParseStrategy implements ParseStrategy {
 
     // $ARGUMENTS 키워드 확인
     const hasArguments = content.includes(MARKDOWN_KEYWORDS.ARGUMENTS);
-    const args = hasArguments ? [
-      {
-        name: MARKDOWN_KEYWORDS.ARGUMENTS_KEY,
-        description: 'Arguments for the prompt',
-        required: false
-      }
-    ] : [];
+    const args = hasArguments
+      ? [
+          {
+            name: MARKDOWN_KEYWORDS.ARGUMENTS_KEY,
+            description: "Arguments for the prompt",
+            required: false,
+          },
+        ]
+      : [];
 
     const promptTemplate: PromptTemplate = {
       name,
@@ -76,20 +78,20 @@ export class MarkdownParseStrategy implements ParseStrategy {
       arguments: args,
       messages: [
         {
-          role: 'user',
+          role: "user",
           content: {
-            type: 'text',
-            text: messageText
-          }
-        }
-      ]
+            type: "text",
+            text: messageText,
+          },
+        },
+      ],
     };
 
     return promptTemplate;
   }
 
   getSupportedExtensions(): readonly string[] {
-    return ['.md', '.markdown'];
+    return [".md", ".markdown"];
   }
 }
 
@@ -111,19 +113,21 @@ export class ParseStrategyFactory {
    */
   static getStrategy(filename: string): ParseStrategy | null {
     const extension = this.getFileExtension(filename);
-    
-    return this.strategies.find(strategy => 
-      strategy.getSupportedExtensions().includes(extension)
-    ) || null;
+
+    return (
+      this.strategies.find((strategy) =>
+        strategy.getSupportedExtensions().includes(extension),
+      ) || null
+    );
   }
 
   /**
    * 지원되는 모든 파일 확장자 반환
    */
   static getSupportedExtensions(): string[] {
-    return this.strategies.flatMap(strategy => 
-      [...strategy.getSupportedExtensions()]
-    );
+    return this.strategies.flatMap((strategy) => [
+      ...strategy.getSupportedExtensions(),
+    ]);
   }
 
   /**
@@ -138,7 +142,9 @@ export class ParseStrategyFactory {
    * 파일명에서 확장자 추출
    */
   private static getFileExtension(filename: string): string {
-    const lastDotIndex = filename.lastIndexOf('.');
-    return lastDotIndex === -1 ? '' : filename.substring(lastDotIndex).toLowerCase();
+    const lastDotIndex = filename.lastIndexOf(".");
+    return lastDotIndex === -1
+      ? ""
+      : filename.substring(lastDotIndex).toLowerCase();
   }
 }
