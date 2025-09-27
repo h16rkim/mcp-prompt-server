@@ -6,14 +6,35 @@ import type {
   TemplateValidationResult,
   McpMessageRole
 } from '../types.js';
-import { HandlebarTemplateProcessor } from './HandlebarTemplateProcessor.js';
 import { Logger } from './Logger.js';
+import {
+  HandlebarTemplateProcessStrategy,
+  MarkdownTemplateProcessStrategy,
+  TemplateProcessStrategy
+} from "./TemplateProcessStrategy";
+import {MARKDOWN_KEYWORDS} from "../config/constants";
 
 /**
  * 템플릿 처리 유틸리티 클래스
- * HandlebarTemplateProcessor를 사용하여 Prompt 템플릿의 변수 치환과 검증을 담당
+ * Strategy Pattern을 사용하여 다양한 템플릿 처리기를 지원
  */
 export class TemplateProcessor {
+  private static processors: TemplateProcessStrategy[] = [
+    new MarkdownTemplateProcessStrategy(),
+    new HandlebarTemplateProcessStrategy(), // 기본 처리기로 마지막에 배치
+  ];
+
+  /**
+   * 템플릿에 적합한 처리기 선택
+   */
+  private static selectProcessor(template: string): TemplateProcessStrategy {
+    const processor = this.processors.find(processor => processor.shouldHandle(template));
+    if (!processor) {
+      throw new Error('템플릿을 처리할 수 있는 적합한 processor를 찾을 수 없습니다.');
+    }
+    return processor;
+  }
+
   /**
    * Prompt 템플릿을 MCP 응답으로 변환
    */
@@ -91,7 +112,8 @@ export class TemplateProcessor {
     }
 
     try {
-      const processedText = HandlebarTemplateProcessor.renderTemplate(message.content.text, args);
+      const processor = this.selectProcessor(message.content.text);
+      const processedText = processor.renderTemplate(message.content.text, args);
       const mcpRole = this.convertToMcpRole(message.role);
 
       return {

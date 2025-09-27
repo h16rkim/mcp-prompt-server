@@ -42,3 +42,8 @@ export const TOOL_DESCRIPTIONS = {
   GET_PROMPT_NAMES: 'Get list of all available prompt names',
   GET_PROMPT_INFO: 'Get detailed information about a specific prompt',
 } as const;
+
+export const MARKDOWN_KEYWORDS = {
+  ARGUMENTS: '$ARGUMENTS',
+  ARGUMENTS_KEY: 'arguments',
+} as const;

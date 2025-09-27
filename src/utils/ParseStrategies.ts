@@ -1,5 +1,6 @@
 import YAML from 'yaml';
 import { MarkdownUtils } from './MarkdownUtils.js';
+import { MARKDOWN_KEYWORDS } from '../config/constants.js';
 import type { PromptTemplate } from '../types.js';
 
 /**
@@ -59,10 +60,20 @@ export class MarkdownParseStrategy implements ParseStrategy {
     const description = MarkdownUtils.extractDescription(content, name);
     const messageText = MarkdownUtils.extractMessageText(content);
 
+    // $ARGUMENTS 키워드 확인
+    const hasArguments = content.includes(MARKDOWN_KEYWORDS.ARGUMENTS);
+    const args = hasArguments ? [
+      {
+        name: MARKDOWN_KEYWORDS.ARGUMENTS_KEY,
+        description: 'Arguments for the prompt',
+        required: true
+      }
+    ] : [];
+
     const promptTemplate: PromptTemplate = {
       name,
       description,
-      arguments: [], // Markdown prompt는 항상 arguments가 없음
+      arguments: args,
       messages: [
         {
           role: 'user',
