@@ -1,7 +1,7 @@
 import Handlebars from "handlebars";
 import type { ArgumentsType } from "../types.js";
 import { Logger } from "./Logger.js";
-import { MARKDOWN_KEYWORDS } from "../config/constants";
+import { MARKDOWN_KEYWORDS } from "../config/constants.js";
 
 /**
  * 템플릿 처리 인터페이스
