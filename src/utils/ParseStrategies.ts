@@ -66,7 +66,7 @@ export class MarkdownParseStrategy implements ParseStrategy {
       {
         name: MARKDOWN_KEYWORDS.ARGUMENTS_KEY,
         description: 'Arguments for the prompt',
-        required: true
+        required: false
       }
     ] : [];
 

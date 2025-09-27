@@ -132,7 +132,7 @@ export class MarkdownTemplateProcessStrategy implements TemplateProcessStrategy 
    */
   renderTemplate(template: string, args: ArgumentsType): string {
     try {
-      const argumentsValue = args[MARKDOWN_KEYWORDS.ARGUMENTS_KEY] || MARKDOWN_KEYWORDS.ARGUMENTS;
+      const argumentsValue = args[MARKDOWN_KEYWORDS.ARGUMENTS_KEY] || `${MARKDOWN_KEYWORDS.ARGUMENTS} (The user did not provide input. Ask the user for the value, or infer it and fill it in.)`;
       const result = template.replace(new RegExp(`\\${MARKDOWN_KEYWORDS.ARGUMENTS}`, 'g'), argumentsValue.toString());
 
       Logger.info(`Markdown 템플릿 렌더링 성공: $ARGUMENTS를 "${argumentsValue}"로 대체`);
