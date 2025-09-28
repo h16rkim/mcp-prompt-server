@@ -6,10 +6,71 @@ This is a Model Context Protocol (MCP) based server that provides predefined pro
 
 - Provides predefined prompt templates for code review, API documentation generation, code refactoring, and more
 - Offers all prompt templates as MCP tools rather than MCP prompts format
+- **Handlebars Template Engine**: Powerful template processing with dynamic parameter substitution and conditional logic
 - Supports dynamic parameter replacement for flexible prompt templates
 - Allows developers to freely add and modify prompt templates
 - Provides tool APIs for reloading prompts and querying available prompts
 - Optimized for editors like Cursor and Windsurf for better integration experience
+- **TypeScript Support**: Fully rewritten in TypeScript for type safety and better development experience
+- **Multi-format Support**: Supports YAML, JSON, and Markdown file formats
+- **Strategy Pattern**: Extensible file parsing architecture for easy addition of new file formats
+
+## Supported File Formats
+
+### YAML/JSON Files
+
+Traditional structured prompt template format supporting parameters and complex configurations.
+
+### Markdown Files (NEW!)
+
+Simple and intuitive Markdown format for writing prompts.
+
+**Markdown File Rules:**
+
+- **name**: Filename (without extension)
+- **description**: Automatically extracted from the first sentence (Markdown formatting removed)
+- **arguments**: Automatically generated based on parameter keywords
+- **messages**: Entire content converted to a single user role message
+
+**Markdown Parameter Passing Methods:**
+
+In Markdown templates, you can pass parameters using the following methods:
+
+1. **$ARGUMENTS**: Used for passing a single argument
+   ```markdown
+   # Code Review Assistant
+   
+   Please review the following code:
+   $ARGUMENTS
+   ```
+
+2. **Numbered Parameters ($1, $2, $3...)**: Used for passing multiple arguments
+   ```markdown
+   # Code Conversion Assistant
+   
+   Please convert the following $1 code to $2 language:
+   
+   ```$1
+   $3
+   ```
+   
+   Consider $4 when converting.
+   ```
+
+3. **Mixed Usage**: $ARGUMENTS and numbered parameters can be used together
+   ```markdown
+   # Complex Task Assistant
+   
+   Main task: $ARGUMENTS
+   Additional option 1: $1
+   Additional option 2: $2
+   ```
+
+**Parameter Processing Rules:**
+
+- Duplicate numbers are automatically deduplicated and treated as a single parameter
+- Numbered parameters are automatically sorted and added to arguments (in 1, 2, 3... order)
+- Default guidance message is displayed when parameter values are not provided
 
 ## Directory Structure
 
