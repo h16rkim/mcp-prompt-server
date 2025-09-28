@@ -192,23 +192,31 @@ npm run dev
 
 ### 사용자 정의 Prompts 디렉토리
 
-기본적으로 서버는 `src/prompts` 디렉토리의 템플릿을 사용하지만, `PROMPTS_DIR` 환경변수를 통해 다른 디렉토리를 지정할 수 있습니다:
+기본적으로 서버는 `src/prompts` 디렉토리의 템플릿을 사용하지만, `PROMPTS_DIRS` 환경변수를 통해 다른 디렉토리를 지정할 수 있습니다:
 
 ```bash
 # 환경변수 설정하여 사용자 정의 prompts 디렉토리 사용
-export PROMPTS_DIR="/path/to/custom/prompts"
+export PROMPTS_DIRS="~/my/custom/prompts"
 npm start
 
 # 또는 실행 시 직접 설정
-PROMPTS_DIR="/path/to/custom/prompts" npm start
+PROMPTS_DIRS="./my/relative/prompts" npm start
+
+# 여러 디렉토리 지정 (쉼표로 구분)
+PROMPTS_DIRS="~/my/path/1, ./my/path/2, /absolute/path/3" npm start
 
 # npx 사용 시
-PROMPTS_DIR="/path/to/custom/prompts" npx @h16rkim/mcp-prompt-server
+PROMPTS_DIRS="~/my/custom/prompts" npx @h16rkim/mcp-prompt-server
 ```
 
-**PROMPTS_DIR 설정 시 주의사항:**
+**PROMPTS_DIRS 설정 시 주요 기능:**
 
-- 지정된 디렉토리에 있는 모든 `.yaml`, `.json`, `.md` 파일을 프롬프트 템플릿으로 인식합니다
+- **다중 디렉토리 지원**: 쉼표로 구분하여 여러 디렉토리 지정 가능
+- **유연한 경로 형식**: 절대경로, 상대경로, 홈 디렉토리 경로 모두 지원
+  - 절대경로: `/absolute/path/to/prompts`
+  - 상대경로: `./relative/path/to/prompts`
+  - 홈 디렉토리: `~/path/to/prompts`
+- 지정된 모든 디렉토리에 있는 `.yaml`, `.json`, `.md` 파일을 프롬프트 템플릿으로 인식합니다
 - 파일 형식은 본 문서의 "지원하는 파일 형식" 섹션을 참고하세요
 - 디렉토리가 존재하지 않으면 자동으로 생성됩니다
 - 서버 실행 중에도 `reload_prompts` 도구를 사용하여 변경사항을 반영할 수 있습니다

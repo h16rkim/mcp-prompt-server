@@ -105,6 +105,45 @@ npm start
 
 The server will run on standard input/output and can be connected by Cursor, Windsurf, or other MCP clients.
 
+## Environment Configuration
+
+### Custom Prompts Directory
+
+By default, the server uses templates from the `src/prompts` directory, but you can specify different directories using the `PROMPTS_DIRS` environment variable:
+
+```bash
+# Set environment variable to use custom prompts directory
+export PROMPTS_DIRS="~/my/custom/prompts"
+npm start
+
+# Or set directly when running
+PROMPTS_DIRS="./my/relative/prompts" npm start
+
+# Specify multiple directories (comma-separated)
+PROMPTS_DIRS="~/my/path/1, ./my/path/2, /absolute/path/3" npm start
+
+# When using npx
+PROMPTS_DIRS="~/my/custom/prompts" npx @h16rkim/mcp-prompt-server
+```
+
+**Key Features of PROMPTS_DIRS Configuration:**
+
+- **Multiple Directory Support**: Specify multiple directories separated by commas
+- **Flexible Path Formats**: Supports absolute paths, relative paths, and home directory paths
+  - Absolute path: `/absolute/path/to/prompts`
+  - Relative path: `./relative/path/to/prompts`
+  - Home directory: `~/path/to/prompts`
+- Recognizes all `.yaml`, `.json`, `.md` files in specified directories as prompt templates
+- Refer to the "Supported File Formats" section for file format details
+- Automatically creates directories if they don't exist
+- Changes can be reflected using the `reload_prompts` tool even while the server is running
+
+This feature enables:
+
+- Using different prompt template sets for different projects
+- Utilizing team-shared prompt template directories
+- Managing personalized prompt templates
+
 ## Adding New Prompt Templates
 
 You can create new prompt templates by adding new YAML or JSON files in the `src/prompts` directory. Each template file should contain the following:

@@ -50,10 +50,17 @@ This file provides guidance to AI assistants (Claude Code, Cursor, Windsurf, etc
 
 ### Environment Configuration
 
-- `PROMPTS_DIR` - Optional environment variable to specify custom prompts directory
-  - If set: Uses the specified directory path for prompt templates
+- `PROMPTS_DIRS` - Optional environment variable to specify custom prompts directories
+  - If set: Uses the specified directory paths for prompt templates (supports multiple directories)
   - If not set: Uses default `src/prompts/` directory
-  - Example: `PROMPTS_DIR="/path/to/custom/prompts" npm start`
+  - Supports flexible path formats:
+    - Absolute paths: `/absolute/path/to/prompts`
+    - Relative paths: `./relative/path/to/prompts`
+    - Home directory paths: `~/path/to/prompts`
+  - Multiple directories can be specified separated by commas
+  - Examples: 
+    - `PROMPTS_DIRS="~/my/custom/prompts" npm start`
+    - `PROMPTS_DIRS="./my/path/1, ~/my/path/2, /absolute/path/3" npm start`
 
 ## Code Architecture
 
