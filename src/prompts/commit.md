@@ -14,7 +14,15 @@ Your commit message MUST follow the structure below and be written in Korean.
 
 ### Header
 
-Start with `agent-task: ` followed by a concise summary of the task in Korean.
+Start with `agent-task: `
+
+If user entered commit message, use this message as commit message header. Followings are the message sent by user.
+
+<user-sent-commit-message>
+$ARGUMENTS
+</user-sent-commit-message>
+
+If user did not entered commit message, generate commit message header with a concise summary of the task in Korean.
 
 ### Body
 
