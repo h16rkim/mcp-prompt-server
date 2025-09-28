@@ -167,35 +167,49 @@ export class HandlebarTemplateProcessStrategy
 
 /**
  * Markdown 템플릿 처리 클래스
- * $ARGUMENTS 키워드를 감지하고 첫 번째 인자로 대체
+ * $ARGUMENTS 키워드와 $1, $2, $3... 숫자 파라미터를 감지하고 대체
  */
 export class MarkdownTemplateProcessStrategy
   implements TemplateProcessStrategy
 {
+  private DEFAULT_PARAM_MESSAGE =
+    "(The user did not provide input. Ask the user for the value, or infer it and fill it in.)";
   /**
-   * $ARGUMENTS 키워드가 있는 템플릿을 처리해야 하는지 확인
+   * $ARGUMENTS 키워드나 숫자 파라미터가 있는 템플릿을 처리해야 하는지 확인
    */
   shouldHandle(template: string): boolean {
-    return template.includes(MARKDOWN_KEYWORDS.ARGUMENTS);
+    return (
+      template.includes(MARKDOWN_KEYWORDS.ARGUMENTS) ||
+      MARKDOWN_KEYWORDS.NUMBERED_PARAM_PATTERN.test(template)
+    );
   }
 
   /**
-   * $ARGUMENTS를 첫 번째 인자로 대체하여 템플릿 렌더링
+   * $ARGUMENTS와 숫자 파라미터를 해당 인자로 대체하여 템플릿 렌더링
    */
   renderTemplate(template: string, args: ArgumentsType): string {
     try {
-      const argumentsValue =
-        args[MARKDOWN_KEYWORDS.ARGUMENTS_KEY] ||
-        `${MARKDOWN_KEYWORDS.ARGUMENTS} (The user did not provide input. Ask the user for the value, or infer it and fill it in.)`;
-      const result = template.replace(
-        new RegExp(`\\${MARKDOWN_KEYWORDS.ARGUMENTS}`, "g"),
-        argumentsValue.toString(),
-      );
+      // $ARGUMENTS 처리
+      if (template.includes(MARKDOWN_KEYWORDS.ARGUMENTS)) {
+        const argumentsValue =
+          args[MARKDOWN_KEYWORDS.ARGUMENTS_KEY] ||
+          `${MARKDOWN_KEYWORDS.ARGUMENTS} ${this.DEFAULT_PARAM_MESSAGE}`;
+        return template.replace(
+          new RegExp(`\\${MARKDOWN_KEYWORDS.ARGUMENTS}`, "g"),
+          argumentsValue.toString(),
+        );
+      }
 
-      Logger.info(
-        `Markdown 템플릿 렌더링 성공: $ARGUMENTS를 "${argumentsValue}"로 대체`,
+      // 숫자 파라미터 처리 ($1, $2, $3...)
+      return template.replace(
+        MARKDOWN_KEYWORDS.NUMBERED_PARAM_PATTERN,
+        (match, num) => {
+          const paramValue = args[num];
+          return paramValue !== undefined && paramValue !== null
+            ? paramValue.toString()
+            : `$${num} ${this.DEFAULT_PARAM_MESSAGE}`;
+        },
       );
-      return result;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

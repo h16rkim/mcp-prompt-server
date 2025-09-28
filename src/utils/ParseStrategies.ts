@@ -1,7 +1,7 @@
 import YAML from "yaml";
 import { MarkdownUtils } from "./MarkdownUtils.js";
 import { MARKDOWN_KEYWORDS } from "../config/constants.js";
-import type { PromptTemplate } from "../types.js";
+import type { PromptArgument, PromptTemplate } from "../types.js";
 
 /**
  * 파일 파싱 전략 인터페이스
@@ -51,7 +51,7 @@ export class YamlParseStrategy implements ParseStrategy {
  * Markdown 파싱 전략
  */
 export class MarkdownParseStrategy implements ParseStrategy {
-  parse(content: string, filename?: string): unknown {
+  parse(content: string, filename?: string): PromptTemplate {
     if (!filename) {
       throw new Error("Markdown 파싱에는 파일명이 필요합니다.");
     }
@@ -62,17 +62,48 @@ export class MarkdownParseStrategy implements ParseStrategy {
 
     // $ARGUMENTS 키워드 확인
     const hasArguments = content.includes(MARKDOWN_KEYWORDS.ARGUMENTS);
-    const args = hasArguments
-      ? [
+    if (hasArguments) {
+      return {
+        name,
+        description,
+        arguments: [
           {
             name: MARKDOWN_KEYWORDS.ARGUMENTS_KEY,
             description: "Arguments for the prompt",
             required: false,
           },
-        ]
-      : [];
+        ],
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: messageText,
+            },
+          },
+        ],
+      };
+    }
 
-    const promptTemplate: PromptTemplate = {
+    // $1, $2, $3... 숫자 파라미터 확인 (중복 제거)
+    const numberedParams = new Set<string>();
+    const matches = content.matchAll(MARKDOWN_KEYWORDS.NUMBERED_PARAM_PATTERN);
+    for (const match of matches) {
+      if (match[1]) {
+        numberedParams.add(match[1]);
+      }
+    }
+
+    // 숫자 순서대로 정렬하여 arguments에 추가
+    const args: PromptArgument[] = Array.from(numberedParams)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .map((num) => ({
+        name: num,
+        description: `Parameter ${num}`,
+        required: false,
+      }));
+
+    return {
       name,
       description,
       arguments: args,
@@ -86,8 +117,6 @@ export class MarkdownParseStrategy implements ParseStrategy {
         },
       ],
     };
-
-    return promptTemplate;
   }
 
   getSupportedExtensions(): readonly string[] {

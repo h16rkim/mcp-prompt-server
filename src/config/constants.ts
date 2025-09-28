@@ -51,4 +51,5 @@ export const TOOL_DESCRIPTIONS = {
 export const MARKDOWN_KEYWORDS = {
   ARGUMENTS: "$ARGUMENTS",
   ARGUMENTS_KEY: "arguments",
+  NUMBERED_PARAM_PATTERN: /\$(\d+)/g,
 } as const;
